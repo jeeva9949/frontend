@@ -1,10 +1,68 @@
-import React, { useState } from "react";
+import React from "react";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import "./DynamicItemCreationPage.css";
 
-const DynamicTable = ({ rows = [], setRows }) => {
+const serviceKeywords = [
+  "RE-TIPPING",
+  "RETIPPING",
+  "RE-CONDITIONING",
+  "RE-SHARPENING",
+];
+
+const productHsnSacOverrides = {
+  "GUNDRILL RE-SHARPENING MACHINE": "84603910",
+  "GUNDRILL ACCESSORIES": "84669390",
+  "DEEP HOLE DRILLING ACCESSORIES": "84669390",
+};
+
+const getProductDefaults = (productName) => {
+  if (!productName) {
+    return {
+      description: "",
+      hsnSac: "",
+      discount: "",
+      hideDescriptionDriveOptions: true,
+      hideDriveOptionValues: true,
+      descriptiondriveOptions: "",
+      driveOptionValues: "",
+    };
+  }
+
+  const normalizedProductName = productName.toUpperCase();
+  const isService = serviceKeywords.some((keyword) =>
+    normalizedProductName.includes(keyword),
+  );
+  const isNewDrill = normalizedProductName.endsWith("NEW");
+
+  return {
+    description: "",
+    hsnSac:
+      productHsnSacOverrides[productName] ||
+      (isService ? "998898" : "82075000"),
+    discount: "No",
+    hideDescriptionDriveOptions: !isNewDrill,
+    hideDriveOptionValues: !isNewDrill,
+    descriptiondriveOptions: "",
+    driveOptionValues: "",
+  };
+};
+
+const DynamicTable = ({ rows = [], setRows, readOnly = false }) => {
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
+
+    let processedValue = value;
+
+    // Apply trim to dropdown values to prevent whitespace mismatches
+    if (
+      name === "descriptionOptions" ||
+      name === "typeOptions" ||
+      name === "hsnSac" ||
+      name === "discount" ||
+      name === "driveOptionValues"
+    ) {
+      processedValue = value.trim();
+    }
 
     // Ensure the row exists before updating
     if (!rows[index]) {
@@ -12,15 +70,16 @@ const DynamicTable = ({ rows = [], setRows }) => {
       return;
     }
 
-    const updatedRows = [...rows];
-    updatedRows[index][name] = value;
+    const updatedRows = rows.map((row, rowIndex) =>
+      rowIndex === index ? { ...row, [name]: processedValue } : { ...row },
+    );
 
     // Recalculate amount when quantity or rate changes
     if (name === "quantity" || name === "rate") {
-      if (name === "rate") {
+      if (name === "rate" && typeof value === "string") {
+        // Ensure value is a string before replace
         updatedRows[index][name] = value.replace(/,/g, "");
       }
-      console.log('calculateAmount(updatedRows[index]) ==============', calculateAmount(updatedRows[index]));
       updatedRows[index].amount = calculateAmount(updatedRows[index]);
     }
 
@@ -46,27 +105,28 @@ const DynamicTable = ({ rows = [], setRows }) => {
     } */
 
     if (name === "descriptionOptions") {
-      const endsWithNEW = value.toUpperCase().endsWith("NEW");
+      const productDefaults = getProductDefaults(value);
 
-      updatedRows[index].hideDescriptionDriveOptions = !endsWithNEW;
-      updatedRows[index].hideDriveOptionValues = !endsWithNEW;
-
-      // Clear values if hiding
-      if (!endsWithNEW) {
-        updatedRows[index].descriptiondriveOptions = "";
-        updatedRows[index].driveOptionValues = "";
-      }
+      updatedRows[index] = {
+        // Use original 'value' for getProductDefaults, then processedValue for descriptionOptions
+        ...updatedRows[index],
+        ...productDefaults,
+        descriptionOptions: value,
+      };
     }
 
     setRows(updatedRows);
   };
 
   const calculateAmount = (row) => {
-    if (row.quantity && row.rate) {
-      return (parseFloat(row.quantity) * parseFloat(row.rate)).toLocaleString(
-        "en-IN",
-        { minimumFractionDigits: 2, maximumFractionDigits: 2 },
-      );
+    const quantity = parseFloat(row.quantity?.toString().replace(/,/g, ""));
+    const rate = parseFloat(row.rate?.toString().replace(/,/g, ""));
+
+    if (!Number.isNaN(quantity) && !Number.isNaN(rate)) {
+      return (quantity * rate).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
     return "0.00";
   };
@@ -102,10 +162,12 @@ const DynamicTable = ({ rows = [], setRows }) => {
       discount: "",
       amount: "0.00",
       descriptiondriveOptions: "",
-      driveOptionValues: "", // Initialize as an empty array
+      driveOptionValues: "",
+      hideDescriptionDriveOptions: true,
+      hideDriveOptionValues: true,
     };
 
-    const updatedRows = [...rows];
+    const updatedRows = rows.map((row) => ({ ...row }));
     if (rows.length < 5) {
       // Insert before `emptyRow_columns`
       updatedRows.splice(rows.length, 0, newRow);
@@ -127,9 +189,6 @@ const DynamicTable = ({ rows = [], setRows }) => {
     (total, row) => total + parseFloat(row.quantity || 0),
     0,
   );
-
-  const [selectedDriver, setSelectedDriver] = useState("");
-  const [options, setOptions] = useState([]);
 
   const driverOptions = {
     CD_C: [
@@ -226,18 +285,18 @@ const DynamicTable = ({ rows = [], setRows }) => {
   };
 
   const handleDriverChange = (index, e) => {
-    const selectedDriver = e.target.value;
-    const driverKey = selectedDriver.split(": ")[1];
+    const selectedDriver = e.target.value.trim(); // Trim whitespace from selected driver value
 
-    // First, update other input fields if necessary (using handleInputChange if needed)
-    handleInputChange(index, e);
+    const updatedRows = rows.map((row, rowIndex) =>
+      rowIndex === index
+        ? {
+            ...row,
+            descriptiondriveOptions: selectedDriver,
+            driveOptionValues: "",
+          }
+        : { ...row },
+    );
 
-    // Update the specific row's descriptiondriveOptions and driveOptionValues
-    const updatedRows = [...rows];
-    updatedRows[index].descriptiondriveOptions = selectedDriver;
-    updatedRows[index].driveOptionValues = driverOptions[driverKey] || ""; // Ensure it's always an array
-
-    // Update rows with modified data
     setRows(updatedRows);
   };
 
@@ -254,334 +313,405 @@ const DynamicTable = ({ rows = [], setRows }) => {
 
   return (
     <>
+      <section className="card product-card">
+        <div className="section-title">
+          <span>Product Details</span>
+          <button
+            className="btn-add"
+            type="button"
+            onClick={addRow}
+            disabled={readOnly}
+          >
+            <FaPlus /> Add Item
+          </button>
+        </div>
 
-    <section className="card product-card">
-      
-      <div className="section-title">
-        <span>Product Details</span>
-        <button className="btn-add">
-          <FaPlus /> Add Item
-        </button>
-      </div>
+        <div className="table-wrapper">
+          <table className="product-table">
+            <thead>
+              <tr>
+                <th>SL</th>
+                <th>Description of Goods</th>
+                <th>HSN/SAC</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Per</th>
+                <th>Disc</th>
+                <th>Amount</th>
+                <th></th>
+              </tr>
+            </thead>
 
-      <div className="table-wrapper">
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th>SL</th>
-              <th>Description of Goods</th>
-              <th>HSN/SAC</th>
-              <th>Qty</th>
-              <th>Rate</th>
-              <th>Per</th>
-              <th>Disc</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {rows.map((row, index) => (
-            <React.Fragment key={index}>
-            <tr>
-              <td>{index + 1}</td>
-              <td className="desc-cell">
-                  <select
-                    className="descriptionOptions"
-                    name="descriptionOptions"
-                    value={row.descriptionOptions}
-                    onChange={(e) => handleInputChange(index, e)}
-                  >
-                    <option value="" disabled>
-                      Select an option
-                    </option>
-                    <option value="GUNDRILL NEW">GUNDRILL NEW</option>
-                    <option value="GUNDRILL RE-TIPPING">
-                      GUNDRILL RE-TIPPING
-                    </option>
-                    <option value="GUNDRILL RE-CONDITIONING">
-                      GUNDRILL RE-CONDITIONING
-                    </option>
-                    <option value="GUNDRILL RE-SHARPENING">
-                      GUNDRILL RE-SHARPENING
-                    </option>
-                    <option value="TWO FLUTE GUNDRILL NEW">
-                      TWO FLUTE GUNDRILL NEW
-                    </option>
-                    <option value="TWO FLUTE GUNDRILL RE-TIPPING">
-                      TWO FLUTE GUNDRILL RE-TIPPING
-                    </option>
-                    <option value="TWO FLUTE GUNDRILL RE-CONDITIONING">
-                      TWO FLUTE GUNDRILL RE-CONDITIONING
-                    </option>
-                    <option value="TWO FLUTE GUNDRILL RE-SHARPENING">
-                      TWO FLUTE GUNDRILL RE-SHARPENING
-                    </option>
-                    <option value="GUNDRILL RE-SHARPENING - SPL PROFILE">
-                      GUNDRILL RE-SHARPENING - SPL PROFILE
-                    </option>
-                    <option value="STS-BTA_NEW">STS-BTA_NEW</option>
-                    <option value="STS-BTA_RE-TIPPING">
-                      STS-BTA_RE-TIPPING
-                    </option>
-                    <option value="DTS_EJECTOR DRILL H_BTA_NEW">
-                      DTS_EJECTOR DRILL H_BTA_NEW
-                    </option>
-                    <option value="DTS_EJECTOR DRILL H_BTA_RETIPPING">
-                      DTS_EJECTOR DRILL H_BTA_RETIPPING
-                    </option>
-                    <option value="GUNDRILL ACCESSORIES">
-                      GUNDRILL ACCESSORIES
-                    </option>
-                    <option value="DEEP HOLE DRILLING ACCESSORIES">
-                      DEEP HOLE DRILLING ACCESSORIES
-                    </option>
-                    <option value="INDEXABLE INSERT GUNDRILL NEW">
-                      INDEXABLE INSERT GUNDRILL NEW
-                    </option>
-                    <option value="INDEXABLE INSERT GUNDRILL RE-TIPPING">
-                      INDEXABLE INSERT GUNDRILL RE-TIPPING
-                    </option>
-                    <option value="INDEXABLE INSERT GUNDRILL RE-CONDITIONING">
-                      INDEXABLE INSERT GUNDRILL RE-CONDITIONING
-                    </option>
-                    <option value="GUNDRILL RE-SHARPENING MACHINE">
-                      GUNDRILL RE-SHARPENING MACHINE
-                    </option>
-                    <option value="PULL BORE REAMER">PULL BORE REAMER</option>
-                    <option value="PUSH BORE REAMER">PUSH BORE REAMER</option>
-                    <option value="RIFILING BUTTONS">RIFILING BUTTONS</option>
-                    <option value="MULTIPOINT BRAZED CUTTERS">
-                      MULTIPOINT BRAZED CUTTERS
-                    </option>
-                  </select>
-                  <textarea
-                    className="descriptionText"
-                    name="description"
-                    value={row.description}
-                    onChange={(e) => handleInputChange(index, e)}
-                    placeholder="Enter Description"
-                  />
-                  <select
-                    className="typeOptions"
-                    name="typeOptions"
-                    value={row.typeOptions}
-                    onChange={(e) => handleInputChange(index, e)}
-                  >
-                    <option value="" disabled>
-                      Select an option
-                    </option>
-                    <option value="TYPE: GC 20 CARBIDE COATED">
-                      TYPE: GC 20 CARBIDE COATED
-                    </option>
-                    <option value="TYPE: GC 20 CARBIDE UNCOATED">
-                      TYPE: GC 20 CARBIDE UNCOATED
-                    </option>
-                    <option value="TYPE: GC 30 CARBIDE COATED">
-                      TYPE: GC 30 CARBIDE COATED
-                    </option>
-                    <option value="TYPE: GC 12.5-1 CARBIDE COATED">
-                      TYPE: GC 12.5-1 CARBIDE COATED
-                    </option>
-                    <option value="TYPE: GC 12.5-1 CARBIDE UNCOATED">
-                      TYPE: GC 12.5-1 CARBIDE UNCOATED
-                    </option>
-                    <option value="TYPE: PCD 9.5MP GC 20 CARBIDE COATED">
-                      TYPE: PCD 9.5MP GC 20 CARBIDE COATED
-                    </option>
-                    <option value="TYPE: PCD 9.5MP GC 20 CARBIDE UNCOATED">
-                      TYPE: PCD 9.5MP GC 20 CARBIDE UNCOATED
-                    </option>
-                    <option value="TYPE: P20 CARBIDE HEAD COATED">
-                      TYPE: P20 CARBIDE HEAD COATED
-                    </option>
-                    <option value="TYPE: P20 CARBIDE HEAD UNCOATED">
-                      TYPE: P20 CARBIDE HEAD UNCOATED
-                    </option>
-                    <option value="TYPE: SA6H CARBIDE HEAD COATED">
-                      TYPE: SA6H CARBIDE HEAD COATED
-                    </option>
-                    <option value="TYPE: SA10H CARBIDE HEAD COATED">
-                      TYPE: SA10H CARBIDE HEAD COATED
-                    </option>
-                    <option value="TYPE: SA6H CARBIDE HEAD UNCOATED">
-                      TYPE: SA6H CARBIDE HEAD UNCOATED
-                    </option>
-                    <option value="TYPE: SA10H CARBIDE HEAD UNCOATED">
-                      TYPE: SA10H CARBIDE HEAD UNCOATED
-                    </option>
-                    <option value="TYPE: RC 25 BORE REAMER COATED">
-                      TYPE: RC 25 BORE REAMER COATED
-                    </option>
-                    <option value="TYPE: RC 25 BORE REAMER UNCOATED">
-                      TYPE: RC 25 BORE REAMER UNCOATED
-                    </option>
-                    <option value="TYPE: GUNDRILL GUIDE BUSH CABIDE">
-                      TYPE: GUNDRILL GUIDE BUSH CABIDE
-                    </option>
-                    <option value="TYPE: GUNDRILL GUIDE BUSH EN-STEEL">
-                      TYPE: GUNDRILL GUIDE BUSH EN-STEEL
-                    </option>
-                    <option value="TYPE: GUNDRILL GUIDE BUSH F-ST-CD">
-                      TYPE: GUNDRILL GUIDE BUSH F-ST-CD
-                    </option>
-                    <option value="TYPE: FORMED_WHIP GUIDES SF-GN">
-                      TYPE: FORMED_WHIP GUIDES SF-GN
-                    </option>
-                    <option value="TYPE: FORMED_WHIP GUIDES TF-GN">
-                      TYPE: FORMED_WHIP GUIDES TF-GN
-                    </option>
-                    <option value="TYPE: WHIP GUIDES BTA/ ROUND">
-                      TYPE: WHIP GUIDES BTA/ ROUND
-                    </option>
-                    <option value="TYPE: BTA/ EJECTOR DRILL TUBES">
-                      TYPE: BTA/ EJECTOR DRILL TUBES
-                    </option>
-                    <option value="TYPE: SF-GN-INSERTS">
-                      TYPE: SF-GN-INSERTS
-                    </option>
-                    <option value="TYPE: BTA / EJECTOR INSERTS">
-                      TYPE: BTA / EJECTOR INSERTS
-                    </option>
-                    <option value="TYPE: SSHTN-PGDRG-MS02">
-                      TYPE: SSHTN-PGDRG-MS02
-                    </option>
-                    <option value="TYPE: SSHTN-PGDRG-UF-01">
-                      TYPE: SSHTN-PGDRG-UF-01
-                    </option>
-                    <option value="TYPE: COMBIN-PULL-RIFILING">
-                      TYPE: COMBIN-PULL-RIFILING
-                    </option>
-                    <option value="TYPE: COMBIN-PUSH-RIFILING">
-                      TYPE: COMBIN-PUSH-RIFILING
-                    </option>
-                    <option value="TYPE: PULL RIFILE BUTTONS">
-                      TYPE: PULL RIFILE BUTTONS
-                    </option>
-                    <option value="TYPE: PUSH RIFILE BUTTONS">
-                      TYPE: PUSH RIFILE BUTTONS
-                    </option>
-                    <option value="TYPE: CUTTERS_FORM">
-                      TYPE: CUTTERS_FORM
-                    </option>
-                    <option value="TYPE: MULTIPOINT BRAZED CUTTERS">
-                      TYPE: MULTIPOINT BRAZED CUTTERS
-                    </option>
-                    <option value="TYPE: CUTTERS_PCD">TYPE: CUTTERS_PCD</option>
-                  </select>
-                  <div className="driverOptions">
-                    {/* First Dropdown: Driver Selection */}
+            <tbody>
+              {rows.map((row, index) => (
+                <tr key={row.slNo || index}>
+                  <td>{index + 1}</td>
+                  <td className="desc-cell">
+                    <span className="product-field-label">Goods</span>
                     <select
-                      className="descriptiondriveOptions"
-                      name="descriptiondriveOptions"
-                      value={row.descriptiondriveOptions}
-                      onChange={(e) => handleDriverChange(index, e)}
-                      style={{
-                        display: row.hideDescriptionDriveOptions
-                          ? "none"
-                          : "block",
-                      }}
+                      className="descriptionOptions"
+                      name="descriptionOptions"
+                      value={row.descriptionOptions || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      disabled={readOnly}
                     >
-                      <option value="">Select a driver</option>
-                      {Object.keys(driverOptions).map((key) => (
-                        <option key={key} value={`DRIVER: ${key}`}>
-                          {" "}
-                          DRIVER: {key}{" "}
+                      <option value="" disabled>
+                        Select an option
+                      </option>
+                      <option value="GUNDRILL NEW">GUNDRILL NEW</option>
+                      <option value="GUNDRILL RE-TIPPING">
+                        GUNDRILL RE-TIPPING
+                      </option>
+                      <option value="GUNDRILL RE-CONDITIONING">
+                        GUNDRILL RE-CONDITIONING
+                      </option>
+                      <option value="GUNDRILL RE-SHARPENING">
+                        GUNDRILL RE-SHARPENING
+                      </option>
+                      <option value="TWO FLUTE GUNDRILL NEW">
+                        TWO FLUTE GUNDRILL NEW
+                      </option>
+                      <option value="TWO FLUTE GUNDRILL RE-TIPPING">
+                        TWO FLUTE GUNDRILL RE-TIPPING
+                      </option>
+                      <option value="TWO FLUTE GUNDRILL RE-CONDITIONING">
+                        TWO FLUTE GUNDRILL RE-CONDITIONING
+                      </option>
+                      <option value="TWO FLUTE GUNDRILL RE-SHARPENING">
+                        TWO FLUTE GUNDRILL RE-SHARPENING
+                      </option>
+                      <option value="GUNDRILL RE-SHARPENING - SPL PROFILE">
+                        GUNDRILL RE-SHARPENING - SPL PROFILE
+                      </option>
+                      <option value="STS-BTA_NEW">STS-BTA_NEW</option>
+                      <option value="STS-BTA_RE-TIPPING">
+                        STS-BTA_RE-TIPPING
+                      </option>
+                      <option value="DTS_EJECTOR DRILL H_BTA_NEW">
+                        DTS_EJECTOR DRILL H_BTA_NEW
+                      </option>
+                      <option value="DTS_EJECTOR DRILL H_BTA_RETIPPING">
+                        DTS_EJECTOR DRILL H_BTA_RETIPPING
+                      </option>
+                      <option value="GUNDRILL ACCESSORIES">
+                        GUNDRILL ACCESSORIES
+                      </option>
+                      <option value="DEEP HOLE DRILLING ACCESSORIES">
+                        DEEP HOLE DRILLING ACCESSORIES
+                      </option>
+                      <option value="INDEXABLE INSERT GUNDRILL NEW">
+                        INDEXABLE INSERT GUNDRILL NEW
+                      </option>
+                      <option value="INDEXABLE INSERT GUNDRILL RE-TIPPING">
+                        INDEXABLE INSERT GUNDRILL RE-TIPPING
+                      </option>
+                      <option value="INDEXABLE INSERT GUNDRILL RE-CONDITIONING">
+                        INDEXABLE INSERT GUNDRILL RE-CONDITIONING
+                      </option>
+                      <option value="GUNDRILL RE-SHARPENING MACHINE">
+                        GUNDRILL RE-SHARPENING MACHINE
+                      </option>
+                      <option value="PULL BORE REAMER">PULL BORE REAMER</option>
+                      <option value="PUSH BORE REAMER">PUSH BORE REAMER</option>
+                      <option value="RIFILING BUTTONS">RIFILING BUTTONS</option>
+                      <option value="MULTIPOINT BRAZED CUTTERS">
+                        MULTIPOINT BRAZED CUTTERS
+                      </option>
+                    </select>
+                    <span className="product-field-label">Description</span>
+                    <textarea
+                      className="descriptionText"
+                      name="description"
+                      value={row.description}
+                      onChange={(e) => handleInputChange(index, e)}
+                      placeholder="Enter Description"
+                      readOnly={readOnly}
+                    />
+                    <span className="product-field-label">Type</span>
+                    <select
+                      className="typeOptions"
+                      name="typeOptions"
+                      value={row.typeOptions || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      disabled={readOnly}
+                    >
+                      <option value="" disabled>
+                        Select an option
+                      </option>
+                      <option value="TYPE: GC 20 CARBIDE COATED">
+                        TYPE: GC 20 CARBIDE COATED
+                      </option>
+                      <option value="TYPE: GC 20 CARBIDE UNCOATED">
+                        TYPE: GC 20 CARBIDE UNCOATED
+                      </option>
+                      <option value="TYPE: GC 30 CARBIDE COATED">
+                        TYPE: GC 30 CARBIDE COATED
+                      </option>
+                      <option value="TYPE: GC 12.5-1 CARBIDE COATED">
+                        TYPE: GC 12.5-1 CARBIDE COATED
+                      </option>
+                      <option value="TYPE: GC 12.5-1 CARBIDE UNCOATED">
+                        TYPE: GC 12.5-1 CARBIDE UNCOATED
+                      </option>
+                      <option value="TYPE: PCD 9.5MP GC 20 CARBIDE COATED">
+                        TYPE: PCD 9.5MP GC 20 CARBIDE COATED
+                      </option>
+                      <option value="TYPE: PCD 9.5MP GC 20 CARBIDE UNCOATED">
+                        TYPE: PCD 9.5MP GC 20 CARBIDE UNCOATED
+                      </option>
+                      <option value="TYPE: P20 CARBIDE HEAD COATED">
+                        TYPE: P20 CARBIDE HEAD COATED
+                      </option>
+                      <option value="TYPE: P20 CARBIDE HEAD UNCOATED">
+                        TYPE: P20 CARBIDE HEAD UNCOATED
+                      </option>
+                      <option value="TYPE: SA6H CARBIDE HEAD COATED">
+                        TYPE: SA6H CARBIDE HEAD COATED
+                      </option>
+                      <option value="TYPE: SA10H CARBIDE HEAD COATED">
+                        TYPE: SA10H CARBIDE HEAD COATED
+                      </option>
+                      <option value="TYPE: SA6H CARBIDE HEAD UNCOATED">
+                        TYPE: SA6H CARBIDE HEAD UNCOATED
+                      </option>
+                      <option value="TYPE: SA10H CARBIDE HEAD UNCOATED">
+                        TYPE: SA10H CARBIDE HEAD UNCOATED
+                      </option>
+                      <option value="TYPE: RC 25 BORE REAMER COATED">
+                        TYPE: RC 25 BORE REAMER COATED
+                      </option>
+                      <option value="TYPE: RC 25 BORE REAMER UNCOATED">
+                        TYPE: RC 25 BORE REAMER UNCOATED
+                      </option>
+                      <option value="TYPE: GUNDRILL GUIDE BUSH CABIDE">
+                        TYPE: GUNDRILL GUIDE BUSH CABIDE
+                      </option>
+                      <option value="TYPE: GUNDRILL GUIDE BUSH EN-STEEL">
+                        TYPE: GUNDRILL GUIDE BUSH EN-STEEL
+                      </option>
+                      <option value="TYPE: GUNDRILL GUIDE BUSH F-ST-CD">
+                        TYPE: GUNDRILL GUIDE BUSH F-ST-CD
+                      </option>
+                      <option value="TYPE: FORMED_WHIP GUIDES SF-GN">
+                        TYPE: FORMED_WHIP GUIDES SF-GN
+                      </option>
+                      <option value="TYPE: FORMED_WHIP GUIDES TF-GN">
+                        TYPE: FORMED_WHIP GUIDES TF-GN
+                      </option>
+                      <option value="TYPE: WHIP GUIDES BTA/ ROUND">
+                        TYPE: WHIP GUIDES BTA/ ROUND
+                      </option>
+                      <option value="TYPE: BTA/ EJECTOR DRILL TUBES">
+                        TYPE: BTA/ EJECTOR DRILL TUBES
+                      </option>
+                      <option value="TYPE: SF-GN-INSERTS">
+                        TYPE: SF-GN-INSERTS
+                      </option>
+                      <option value="TYPE: BTA / EJECTOR INSERTS">
+                        TYPE: BTA / EJECTOR INSERTS
+                      </option>
+                      <option value="TYPE: SSHTN-PGDRG-MS02">
+                        TYPE: SSHTN-PGDRG-MS02
+                      </option>
+                      <option value="TYPE: SSHTN-PGDRG-UF-01">
+                        TYPE: SSHTN-PGDRG-UF-01
+                      </option>
+                      <option value="TYPE: COMBIN-PULL-RIFILING">
+                        TYPE: COMBIN-PULL-RIFILING
+                      </option>
+                      <option value="TYPE: COMBIN-PUSH-RIFILING">
+                        TYPE: COMBIN-PUSH-RIFILING
+                      </option>
+                      <option value="TYPE: PULL RIFILE BUTTONS">
+                        TYPE: PULL RIFILE BUTTONS
+                      </option>
+                      <option value="TYPE: PUSH RIFILE BUTTONS">
+                        TYPE: PUSH RIFILE BUTTONS
+                      </option>
+                      <option value="TYPE: CUTTERS_FORM">
+                        TYPE: CUTTERS_FORM
+                      </option>
+                      <option value="TYPE: MULTIPOINT BRAZED CUTTERS">
+                        TYPE: MULTIPOINT BRAZED CUTTERS
+                      </option>
+                      <option value="TYPE: CUTTERS_PCD">
+                        TYPE: CUTTERS_PCD
+                      </option>
+                    </select>
+                    <div className="driverOptions">
+                      {/* First Dropdown: Driver Selection */}
+                      {!row.hideDescriptionDriveOptions && (
+                        <div className="driver-field">
+                          <span className="product-field-label">Driver</span>
+                          <select
+                            className="descriptiondriveOptions"
+                            name="descriptiondriveOptions"
+                            value={row.descriptiondriveOptions || ""}
+                            onChange={(e) => handleDriverChange(index, e)}
+                            disabled={readOnly}
+                            style={{
+                              display: row.hideDescriptionDriveOptions
+                                ? "none"
+                                : "block",
+                            }}
+                          >
+                            <option value="">Select a driver</option>
+                            {Object.keys(driverOptions).map((key) => (
+                              <option key={key} value={`DRIVER: ${key}`}>
+                                {" "}
+                                DRIVER: {key}{" "}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Second Dropdown: Drive Option Values */}
+                      {!row.hideDriveOptionValues && (
+                        <div className="driver-field">
+                          <span className="product-field-label">
+                            Driver Size
+                          </span>
+                          <select
+                            className="driveOptionValues"
+                            name="driveOptionValues"
+                            value={row.driveOptionValues || ""}
+                            onChange={(e) => handleInputChange(index, e)}
+                            disabled={readOnly}
+                            style={{
+                              display: row.hideDriveOptionValues
+                                ? "none"
+                                : "block",
+                            }}
+                          >
+                            <option value="">Select Option</option>
+
+                            {Array.isArray(
+                              driverOptions[
+                                row.descriptiondriveOptions?.split(": ")[1]
+                              ],
+                            ) &&
+                            driverOptions[
+                              row.descriptiondriveOptions?.split(": ")[1]
+                            ]?.length > 0 ? (
+                              driverOptions[
+                                row.descriptiondriveOptions?.split(": ")[1]
+                              ].map((value, i) => (
+                                <option key={i} value={value}>
+                                  {value}
+                                </option>
+                              ))
+                            ) : (
+                              <option value="" disabled>
+                                No options available
+                              </option>
+                            )}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+
+                  <td className="hsn-cell">
+                    <select
+                      className="hsnSacOptions"
+                      name="hsnSac"
+                      value={row.hsnSac || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      disabled={readOnly}
+                    >
+                      <option value="" disabled>
+                        {" "}
+                        Select an option{" "}
+                      </option>
+                      {getAvailableOptions().map((option) => (
+                        <option key={option} value={option}>
+                          {option}
                         </option>
                       ))}
                     </select>
+                  </td>
 
-                    {/* Second Dropdown: Drive Option Values */}
-                    <select
-                      className="driveOptionValues"
-                      name="driveOptionValues"
-                      value={row.driveOptionValues}
+                  <td className="quantity-cell">
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={row.quantity || ""}
                       onChange={(e) => handleInputChange(index, e)}
-                      style={{
-                        display: row.hideDriveOptionValues ? "none" : "block",
-                      }}
+                      placeholder="Quantity"
+                      readOnly={readOnly}
+                    />
+                  </td>
+                  <td className="rate-cell">
+                    <input
+                      type="text"
+                      name="rate"
+                      value={row.rate || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      onBlur={() => handleRateBlur(index)}
+                      placeholder="Rate"
+                      readOnly={readOnly}
+                    />
+                  </td>
+                  <td className="per-cell">
+                    <input
+                      type="text"
+                      name="per"
+                      value={row.per || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      placeholder="No's"
+                      readOnly={readOnly}
+                    />
+                  </td>
+
+                  <td className="discount-cell">
+                    <select
+                      className="discountOptions"
+                      name="discount"
+                      value={row.discount || ""}
+                      onChange={(e) => handleInputChange(index, e)}
+                      disabled={readOnly}
                     >
-                      <option value="">Select Option</option>
-
-                      {Array.isArray(
-                        driverOptions[
-                          row.descriptiondriveOptions?.split(": ")[1]
-                        ],
-                      ) &&
-                      driverOptions[row.descriptiondriveOptions?.split(": ")[1]]
-                        ?.length > 0 ? (
-                        driverOptions[
-                          row.descriptiondriveOptions?.split(": ")[1]
-                        ].map((value, i) => (
-                          <option key={i} value={value}>
-                            {value}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          No options available
-                        </option>
-                      )}
+                      <option value="" disabled>
+                        Select an option
+                      </option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
                     </select>
-                  </div>
-                </td>
-
-              <td className="hsn-cell">
-                <select
-                  className="hsnSacOptions" name="hsnSac" value={row.hsnSac} onChange={(e) => handleInputChange(index, e)}
-                >
-                  <option value="" disabled> Select an option </option>
-                  {getAvailableOptions().map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </td>
-
-              <td className="quantity-cell">
-                <input type="number" name="quantity"
-                  value={row.quantity} onChange={(e) => handleInputChange(index, e)} placeholder="Quantity" />
-              </td>
-
-              <td className="rate-cell">
-                <input type="text" name="rate" value={row.rate} onChange={(e) => handleInputChange(index, e)}
-                    onBlur={() => handleRateBlur(index)} placeholder="Rate" />
-              </td>
-                
-              <td className="per-cell">
-                <input type="text" name="per" value={row.per} onChange={(e) => handleInputChange(index, e)} 
-                  placeholder="No's" />
-              </td>
-
-              <td className="discount-cell">
-                <select className="discountOptions" name="discount"
-                    value={row.discount} onChange={(e) => handleInputChange(index, e)} >
-                  <option value="" disabled>Select an option</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td className="amount-cell">
-                <input type="text" name="amount" value={`₹   ${row.amount}`} placeholder="Amount" readOnly />
-              </td>
-
-              <td className="action-cell">
-                <button type="button" className="icon-btn" onClick={addRow}>
-                    <FaPlus />
-                </button>
-                <button type="button" className="icon-btn danger" onClick={() => removeRow(index)}>
-                  <FaTrash />
-                </button>
-              </td>
-            </tr>
-            </React.Fragment>
-          ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-
+                  </td>
+                  <td className="amount-cell">
+                    <input
+                      type="text"
+                      name="amount"
+                      value={`₹   ${row.amount || "0.00"}`}
+                      placeholder="Amount"
+                      readOnly
+                    />
+                  </td>
+                  <td className="action-cell">
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      onClick={addRow}
+                      disabled={readOnly}
+                    >
+                      <FaPlus />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-btn danger"
+                      onClick={() => removeRow(index)}
+                      disabled={readOnly}
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </>
   );
 };

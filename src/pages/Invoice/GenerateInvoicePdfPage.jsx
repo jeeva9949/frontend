@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import { toIndianWords } from "../../components/common/numberToWords";
@@ -11,14 +11,47 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditInvoicePage.css";
 
-const PdfPage = () => {
+const PdfPage = ({
+  invoiceDataOverride = null,
+  embedded = false,
+  onDownloadComplete,
+} = {}) => {
   const { id, timeStamp } = useParams();
+  const location = useLocation();
   const [invoiceData, setInvoiceData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const [existingRows, setExistingRows] = useState([]);
+  const hasDownloadedRef = useRef(false);
 
   useEffect(() => {
+    if (invoiceDataOverride) {
+      setInvoiceData(invoiceDataOverride);
+      hasDownloadedRef.current = false;
+      return;
+    }
+
+    const pendingInvoiceData = sessionStorage.getItem("pendingInvoicePdfData");
+    let invoiceFromStorage = null;
+
+    if (pendingInvoiceData) {
+      try {
+        invoiceFromStorage = JSON.parse(pendingInvoiceData);
+      } catch (error) {
+        console.error("Invalid pending invoice PDF data:", error);
+        sessionStorage.removeItem("pendingInvoicePdfData");
+      }
+    }
+
+    const invoiceFromNavigation =
+      location.state?.invoiceData || invoiceFromStorage;
+
+    if (invoiceFromNavigation) {
+      setInvoiceData(invoiceFromNavigation);
+      sessionStorage.removeItem("pendingInvoicePdfData");
+      return;
+    }
+
     if (id && timeStamp) {
       setIsLoading(true);
       const fetchInvoiceById = async () => {
@@ -51,16 +84,25 @@ const PdfPage = () => {
       };
       fetchInvoiceById();
     }
-  }, [id, timeStamp]);
+  }, [id, timeStamp, location.state, invoiceDataOverride]);
 
   useEffect(() => {
-    if (invoiceData) {
-      //document.getElementsByClassName('spacetech')[0].style.height = '70px';
-      pdfDownload();
+    if (invoiceData && !hasDownloadedRef.current) {
+      hasDownloadedRef.current = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          pdfDownload();
+        });
+      });
     }
   }, [invoiceData]);
 
   const pdfDownload = async () => {
+    const loadingToastId = embedded
+      ? null
+      : toast.loading("Generating and downloading PDF...");
+    setIsLoading(true);
+
     try {
       const pdf = new jsPDF({
         unit: "mm",
@@ -92,15 +134,15 @@ const PdfPage = () => {
         // Generate content
         const element = document.getElementById("content");
         if (!element) {
-          console.error("Element with ID 'content' not found.");
-          setIsLoading(false);
-          return;
+          throw new Error("Element with ID 'content' not found.");
         }
 
         // Convert the element to canvas using html2canvas
         const canvas = await html2canvas(element, {
-          scale: 1, // Use scale 1 to avoid increasing resolution too much
+          scale: 2,
           useCORS: true, // Ensure cross-origin images are handled correctly
+          allowTaint: true,
+          backgroundColor: "#ffffff",
           logging: false, // Disable console logging for performance
         });
         const imgData = canvas.toDataURL("image/png");
@@ -147,8 +189,28 @@ const PdfPage = () => {
         compressedPdf,
         `${invoiceData.invoiceNo}_Full_Invoice_Compressed.pdf`,
       );
+      if (embedded) {
+        onDownloadComplete?.({ success: true });
+      } else {
+        toast.update(loadingToastId, {
+          render: "PDF downloaded successfully.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
     } catch (error) {
       console.error("Error generating PDF:", error);
+      if (embedded) {
+        onDownloadComplete?.({ success: false, error });
+      } else {
+        toast.update(loadingToastId, {
+          render: error?.message || "Failed to generate PDF.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+      }
     } finally {
       setIsLoading(false);
       //document.getElementsByClassName('spacetech')[0].style.height = '80px';
@@ -165,22 +227,18 @@ const PdfPage = () => {
 
   return (
     <>
-      <Header />
+      {!embedded && <Header />}
       <div className="invoice">
-        <ToastContainer />
-        {isLoading && (
+        {!embedded && <ToastContainer />}
+        {!embedded && isLoading && (
           <div className="loading-overlay">
             <div className="loading-spinner"></div>
           </div>
         )}
-        <div
-          id="content"
-          className={
-            isLoading ? "blurred invoice-container" : "invoice-container"
-          }
-        >
+        <div id="content" className="invoice-container">
           <h3 className="invoice-title">
             <span>{invoiceData?.invoiceType || "N/A"}</span>
+            <span id="invoiceReference">(Original For Recipient)</span>
           </h3>
 
           <div className="header row">
@@ -453,9 +511,7 @@ const PdfPage = () => {
                   <tr className="blockOneTrSec">
                     <td>
                       {invoiceData?.grandTotal
-                        ? toIndianWords(parseFloat(invoiceData.grandTotal))
-                            .toUpperCase()
-                            .concat(" ONLY")
+                        ? `Rupees ${toIndianWords(parseFloat(invoiceData.grandTotal))} Only`
                         : "-"}
                     </td>
                   </tr>
@@ -476,7 +532,7 @@ const PdfPage = () => {
 
                   <tr>
                     <td>
-                      <strong>CGST (9%)</strong>
+                      <strong>CGST 9 %</strong>
                     </td>
                     <td>
                       ₹
@@ -492,7 +548,7 @@ const PdfPage = () => {
 
                   <tr>
                     <td>
-                      <strong>SGST (9%)</strong>
+                      <strong>SGST 9 %</strong>
                     </td>
                     <td>
                       ₹
@@ -508,7 +564,7 @@ const PdfPage = () => {
 
                   <tr>
                     <td>
-                      <strong>IGST (18%)</strong>
+                      <strong>IGST 18 %</strong>
                     </td>
                     <td>
                       ₹
@@ -557,23 +613,15 @@ const PdfPage = () => {
                   <tr className="taxHeader">
                     <th>HSN/SAC</th>
                     <th>Taxable Value</th>
-                    {invoiceData &&
-                    invoiceData.gstin &&
-                    typeof invoiceData.gstin === "string" &&
-                    invoiceData.gstin.startsWith("29") ? (
-                      <>
-                        <th>
-                          CGST <div className="cgstPercentage"> 9% </div>
-                        </th>
-                        <th>
-                          SGST <div className="sgstPercentage"> 9% </div>
-                        </th>
-                      </>
-                    ) : (
-                      <th>
-                        IGST <div className="igstPercentage"> 18% </div>
-                      </th>
-                    )}
+                    <th>
+                      CGST Rate <div className="cgstPercentage"> 9% </div>
+                    </th>
+                    <th>
+                      SGST Rate <div className="sgstPercentage"> 9% </div>
+                    </th>
+                    <th>
+                      IGST Rate <div className="igstPercentage"> 18% </div>
+                    </th>
                     <th>Total Tax Amount</th>
                   </tr>
                 </thead>
@@ -581,38 +629,36 @@ const PdfPage = () => {
                   <tr className="taxColValue">
                     <td className="hsn_sac">{invoiceData?.hsnSac}</td>
                     <td className="taxable_value">₹{invoiceData?.total}</td>
-                    {invoiceData &&
-                    invoiceData.gstin &&
-                    typeof invoiceData.gstin === "string" &&
-                    invoiceData.gstin.startsWith("29") ? (
-                      <>
-                        <td className="cgst">
-                          ₹
-                          {isNaN((9 / 100) * invoiceData?.total)
-                            ? "0.00"
-                            : parseFloat(
-                                ((9 / 100) * invoiceData?.total).toFixed(2),
-                              )}{" "}
-                        </td>
-                        <td className="sgst">
-                          ₹
-                          {isNaN((9 / 100) * invoiceData?.total)
-                            ? "0.00"
-                            : parseFloat(
-                                ((9 / 100) * invoiceData?.total).toFixed(2),
-                              )}{" "}
-                        </td>
-                      </>
-                    ) : (
-                      <td className="igst">
-                        ₹
-                        {isNaN((18 / 100) * invoiceData?.total)
+                    <td className="cgst">
+                      ₹
+                      {invoiceData?.gstin?.startsWith("29")
+                        ? isNaN((9 / 100) * invoiceData?.total)
+                          ? "0.00"
+                          : parseFloat(
+                              ((9 / 100) * invoiceData?.total).toFixed(2),
+                            )
+                        : "0.00"}
+                    </td>
+                    <td className="sgst">
+                      ₹
+                      {invoiceData?.gstin?.startsWith("29")
+                        ? isNaN((9 / 100) * invoiceData?.total)
+                          ? "0.00"
+                          : parseFloat(
+                              ((9 / 100) * invoiceData?.total).toFixed(2),
+                            )
+                        : "0.00"}
+                    </td>
+                    <td className="igst">
+                      ₹
+                      {!invoiceData?.gstin?.startsWith("29")
+                        ? isNaN((18 / 100) * invoiceData?.total)
                           ? "0.00"
                           : parseFloat(
                               ((18 / 100) * invoiceData?.total).toFixed(2),
-                            )}{" "}
-                      </td>
-                    )}
+                            )
+                        : "0.00"}
+                    </td>
                     <td className="total_tax_amount">
                       ₹{invoiceData?.totalTaxAmount}
                     </td>
@@ -620,17 +666,9 @@ const PdfPage = () => {
                   <tr className="taxColEmpty_value">
                     <td className="empty_value"></td>
                     <td className="empty_value"></td>
-                    {invoiceData &&
-                    invoiceData.gstin &&
-                    typeof invoiceData.gstin === "string" &&
-                    invoiceData.gstin.startsWith("29") ? (
-                      <>
-                        <td className="empty_value"></td>
-                        <td className="empty_value"></td>
-                      </>
-                    ) : (
-                      <td className="empty_value"></td>
-                    )}
+                    <td className="empty_value"></td>
+                    <td className="empty_value"></td>
+                    <td className="empty_value"></td>
                     <td className="empty_value"></td>
                   </tr>
                 </tbody>
@@ -641,7 +679,7 @@ const PdfPage = () => {
                     <td className="taxInWordsLabel">Tax amount (In words)</td>
                     <td className="taxInWordsValue">
                       {!isNaN(parseFloat(invoiceData?.totalTaxAmount))
-                        ? `${toIndianWords(parseInt(rupees)).toUpperCase()} RUPEES AND ${toIndianWords(parseInt(paise)).toUpperCase()} PAISE ONLY`
+                        ? `Rupees ${toIndianWords(parseInt(rupees))} Paise ${toIndianWords(parseInt(paise))} Only`
                         : "-"}{" "}
                     </td>
                   </tr>
@@ -660,9 +698,10 @@ const PdfPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {!embedded && <Footer />}
     </>
   );
 };
 
 export default PdfPage;
+export { PdfPage };
