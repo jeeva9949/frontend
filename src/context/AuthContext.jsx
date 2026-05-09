@@ -1,0 +1,1 @@
+// React context for authentication.

@@ -1,0 +1,217 @@
+/* =================================================
+   INVOICE TOTAL WRAPPER – MAIN LAYOUT
+================================================= */
+
+.invoice-total-wrapper {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #000;
+  
+}
+
+/* =================================================
+   LEFT SIDE – SINGLE BLOCK (AMOUNT + TAX)
+================================================= */
+
+.invoice-left-block {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+/* =================================================
+   AMOUNT IN WORDS (EXISTING + ALIGNED)
+================================================= */
+
+.amount-words-box {
+  border: 1px solid #000;
+}
+
+.amount-words-title {
+  background: #f8fafc;
+  font-weight: bold;
+  padding: 8px;
+  border-bottom: 1px solid #000;
+  font-size: 13px;
+}
+
+.amount-words-value {
+  padding: 12px;
+  min-height: 40px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+/* =================================================
+   TAX SECTION – GST SUMMARY (UNCHANGED CORE)
+================================================= */
+
+.tax-section {
+  margin-top: 0; /* aligned inside left block */
+  font-size: 13px;
+  color: #000;
+}
+
+/* Main Tax Table */
+.tax-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header */
+.taxHeader th {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: center;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* Percentage under tax headers */
+.cgstPercentage,
+.sgstPercentage,
+.igstPercentage {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Value Row */
+.taxColValue td {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+/* Specific column alignment */
+.hsn_sac {
+  text-align: center;
+}
+
+.taxable_value {
+  text-align: right;
+}
+
+.cgst,
+.sgst,
+.igst,
+.total_tax_amount {
+  text-align: right;
+}
+
+/* Empty spacer row */
+.taxColEmpty_value td {
+  border: 1px solid #000;
+  height: 18px;
+}
+
+/* =================================================
+   TAX IN WORDS BLOCK
+================================================= */
+
+.taxBlock {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+
+.taxBlock td {
+  border: 1px solid #000;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.taxInWordsLabel {
+  width: 25%;
+  font-weight: 600;
+  text-align: left;
+}
+
+.taxInWordsValue {
+  width: 75%;
+  text-align: left;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* =================================================
+   RIGHT SIDE – SINGLE BLOCK (TOTALS + SUMMARY)
+================================================= */
+
+.invoice-right-block {
+  width: 25%;
+  border: 1px solid #e5e7eb;
+  gap: 8px;
+  padding: 8px;
+}
+
+/* =================================================
+   TOTALS BOX (EXISTING + REUSED)
+================================================= */
+
+.totals-box {
+  border-bottom: 1px solid #000;
+  background: #f8fafc;
+}
+
+.totals-header {
+  text-align: right;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #000;
+  font-weight: bold;
+}
+
+.totals-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.totals-table td {
+  padding: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #000;
+}
+
+.totals-table td:first-child {
+  text-align: left;
+}
+
+.totals-table td:last-child {
+  text-align: right;
+}
+
+/* Grand Total Highlight */
+.grand-total-row td {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* =================================================
+   PRICE SUMMARY (UNDER TOTALS)
+================================================= */
+
+.price-summary {
+  padding: 10px 8px;
+  font-weight: bold;
+  font-size: 13px;
+  border-top: 1px solid #000;
+}
+
+/* =================================================
+   PRINT SAFE (OPTIONAL)
+================================================= */
+
+@media print {
+  .invoice-total-wrapper {
+    gap: 10px;
+  }
+}

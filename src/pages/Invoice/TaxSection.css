@@ -1,0 +1,97 @@
+/* =========================
+   TAX SECTION – GST SUMMARY
+========================= */
+
+.tax-section {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #000;
+}
+
+/* Main Tax Table */
+.tax-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header */
+.taxHeader th {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: center;
+  font-weight: 600;
+  vertical-align: middle;
+  background: #f8fafc;
+}
+
+/* Percentage under tax headers */
+.cgstPercentage,
+.sgstPercentage,
+.igstPercentage {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+  float: right;
+}
+
+/* Value Row */
+.taxColValue td {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+/* Specific column alignment */
+.hsn_sac {
+  text-align: center;
+}
+
+.taxable_value {
+  text-align: right;
+}
+
+.cgst,
+.sgst,
+.igst,
+.total_tax_amount {
+  text-align: right;
+}
+
+/* Empty spacer row */
+.taxColEmpty_value td {
+  border: 1px solid #000;
+  height: 18px;
+}
+
+/* =========================
+   TAX IN WORDS BLOCK
+========================= */
+
+.taxBlock {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+
+.taxBlock td {
+  border: 1px solid #000;
+  padding: 8px;
+  vertical-align: top;
+}
+
+/* Label */
+.taxInWordsLabel {
+    width: 19%;
+    font-weight: 600;
+    text-align: center;
+    background: #f8fafc;
+}
+
+/* Value */
+.taxInWordsValue {
+  width: 75%;
+  text-align: left;
+  font-weight: 500;
+  text-transform: uppercase;
+}

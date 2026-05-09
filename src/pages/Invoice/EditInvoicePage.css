@@ -1,0 +1,901 @@
+.details td {
+  height: 32px;
+}
+.billHeaderSection tr td:nth-last-child(1) {
+  width: 4.5%;
+  padding-left: 10px;
+  font-size: 15px;
+}
+.billHeaderSection tr td:nth-last-child(2) {
+  width: 5%;
+}
+.billHeaderSection tr td:nth-last-child(3) {
+  width: 7%;
+  padding-left: 10px;
+  font-size: 15px;
+}
+.billHeaderSection tr td:nth-last-child(5) {
+  width: 18%;
+  font-size: 15px;
+}
+td.modeOfPaymentselect {
+  font-size: 15px;
+}
+span.descriptionOptions {
+  width: 100%;
+  padding: 3px;
+  height: 15px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+  border: 0px;
+  color: red;
+  display: block;
+}
+span.description {
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-size: 15px;
+  margin-top: 5px;
+  height: 15px;
+  border: none;
+}
+span.typeOptions {
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-size: 15px;
+  margin-top: 5px;
+  height: 15px;
+  border: none;
+}
+span.descriptiondriveOptions,
+span.driveOptionValues {
+  display: inline-block;
+  font-size: 15px;
+  margin-top: 5px;
+  margin-bottom: 6px;
+  height: 15px;
+  border: none;
+}
+span.descriptiondriveOptions {
+  text-align: right;
+  padding-right: 10px;
+  width: 48%;
+}
+span.driveOptionValues {
+  text-align: left;
+  padding-left: 10px;
+  width: 45%;
+}
+.paymentDetailsBlock {
+  display: table;
+  width: 720px;
+  margin: auto;
+  border: 1px solid;
+}
+.tax-section {
+  margin-bottom: 50px;
+}
+.paymentDetailsBlock h3 {
+  margin: 10px 15px;
+}
+.paymentDetailsBlock tr th,
+.paymentDetailsBlock tr td {
+  border: 1px solid;
+  padding: 0px 5px;
+  height: 25px;
+  width: 25%;
+}
+/*
+input[type="number"],input[type="text"] {
+    width: 100%;
+    border: none;
+    font-size: 12px;
+    height: 30px;
+    display: block;
+} */
+.paymentSubmitButton {
+  margin: 20px 30px;
+  float: right;
+}
+td.gstinInput {
+  padding-left: 0px !important;
+}
+
+@media (min-width: 1200px) and (max-width: 1918px) {
+  .l-shape div {
+    line-height: 21px;
+  }
+  .receiver p:nth-last-child(1) {
+    height: 35px;
+    line-height: 50px;
+  }
+}
+
+@media (min-width: 1919px) and (max-width: 3000px) {
+  .total-section .blockSec tr td:nth-last-child(2) {
+    padding: 0 7.5px;
+  }
+  .bankDetailsBlockOne,
+  .bankDetailsBlockTwo {
+    width: 49.8%;
+  }
+  .spacetech {
+    height: 91px;
+  }
+}
+
+@supports (-ms-ime-align: auto) {
+  @media (min-width: 1200px) and (max-width: 1918px) {
+    .spacetech {
+      height: 70px;
+    }
+  }
+  @media (min-width: 1919px) and (max-width: 3000px) {
+    .spacetech {
+      height: 91px;
+    }
+  }
+}
+
+@supports (-ms-accelerator: true) {
+  @media (min-width: 1200px) and (max-width: 1918px) {
+    .spacetech {
+      height: 70px;
+    }
+  }
+  @media (min-width: 1919px) and (max-width: 3000px) {
+    .spacetech {
+      height: 91px;
+    }
+  }
+}
+
+#content {
+  transform-origin: top left;
+}
+
+#addressForPdf {
+  display: none;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.invoice-container {
+  max-width: 1300px;
+  margin: 20px auto;
+  border: 2px solid #000;
+  display: grid;
+}
+
+h3.invoice-title {
+  text-align: center;
+  margin: 0px;
+  border-bottom: 2px solid #000;
+  font-size: 20px;
+  height: 30px;
+}
+
+select#invoiceType {
+  text-align: center;
+  margin: 6px 0px 0px 0px;
+  font-size: 18px;
+  width: 200px;
+  font-weight: bold;
+  appearance: none; /* Remove default arrow in most browsers */
+  -webkit-appearance: none; /* Remove in WebKit-based browsers like Chrome and Safari */
+  -moz-appearance: none; /* Remove in Firefox */
+  background: none; /* Optional: Remove the default background */
+  padding-right: 0; /* Optional: Adjust the padding to remove the space for the arrow */
+  height: 28px;
+  line-height: 28px;
+  margin-left: 160px;
+}
+select#invoiceType:focus {
+  border: none; /* Remove the border */
+  outline: none; /* Optional: Remove the outline */
+}
+.header {
+  margin: 0px;
+}
+
+.highlight {
+  border: 2px solid;
+  margin: 0px;
+}
+
+.headerBlock1 img {
+  max-width: 375px;
+  height: 161px;
+  float: left;
+}
+
+.header h1 {
+  margin: 10px 0 5px;
+}
+
+.header p {
+  margin: 5px 0;
+}
+
+.details,
+.table-section,
+.total-section {
+  margin: 0px 0;
+}
+
+.details table,
+.table-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.details td,
+.table-section th,
+.table-section td {
+  padding: 0px 8px;
+  font-size: 14px;
+}
+
+.table-section tbody tr td:nth-last-child(9) {
+  text-align: center;
+}
+
+.table-section th {
+  background-color: #f2f2f2;
+}
+
+.table-section td select {
+  width: 100%;
+  padding: 3px;
+  height: 25px;
+  text-align: center;
+}
+
+.table-section td input {
+  width: 100%;
+  height: 26px;
+  border: 0px;
+  text-align: center;
+}
+
+.table-section td input[type="date"] {
+  width: auto;
+}
+table.blockOne {
+  float: left;
+  width: 62.5%;
+}
+.total-section .blockSec {
+  float: right;
+  max-width: 24.85%;
+}
+.total-section td {
+  padding: 5px;
+}
+.headerBlock2 img {
+  max-width: 400px;
+}
+.headerBlock2 {
+  text-align: right;
+}
+.addressandGstBlock {
+  width: 31%;
+  float: right;
+}
+.addressBlock {
+  text-align: left;
+  font-size: 15px;
+  padding: 0px 16px;
+}
+
+.billHeaderSection tr td:first-child {
+  width: 6%;
+}
+
+.billHeaderSection tr td:nth-last-child(5) {
+  width: 21%;
+  padding: 0px;
+}
+
+.billHeaderSection tr td:nth-last-child(2) {
+  width: 6%;
+}
+
+.billHeaderSection tr td:nth-last-child(4) {
+  width: 6%;
+  padding: 0px 0px 0px 8px;
+}
+
+.billHeaderSection tr td:nth-last-child(1) {
+  width: 5%;
+  padding: 0px;
+}
+.billHeaderSection tr td:nth-last-child(3) {
+  width: 7%;
+  padding: 0px;
+}
+.billHeaderSection tr td.consigneeDetails {
+  border-top: 2px solid #000;
+  border-right: 2px solid #000;
+  border-bottom: 0px;
+  padding: 0px 0px 0px 8px;
+}
+.details.billHeaderSection input[type="text"],
+.details.billHeaderSection input[type="number"] {
+  width: 96%;
+  border: none;
+  font-size: 15px;
+  height: 30px;
+  display: block;
+}
+.details.billHeaderSection td.nameInput input[type="text"],
+.details.billHeaderSection td.contactInput input[type="text"],
+.details.billHeaderSection td.placeOfSupplyInput input[type="text"],
+.details.billHeaderSection td.gstinInput input[type="text"] {
+  width: 98.5%;
+}
+
+*:focus-visible {
+  outline: none; /* remove browser default outline */
+  border: none; /* remove any existing border */
+}
+
+/*.details td, .table-section th, .table-section td {
+    border: 2px solid #000;
+} */
+
+textarea.address,
+input.address {
+  width: 99%;
+  border: none;
+  font-size: 15px;
+  height: 60px;
+  float: left;
+}
+
+td.gstinInput {
+  border-left: 0px;
+  padding: 0px;
+}
+select {
+  width: 100%;
+  height: 30px;
+  font-size: 15px;
+  border: 0px;
+}
+input[type="date"] {
+  width: 94%;
+  height: 30px;
+  border: none;
+  padding: 0px 4px;
+  font-size: 15px;
+}
+tr.headerRow {
+  width: 100%;
+}
+th.slNoHeader {
+  width: 8%;
+  text-align: center;
+}
+th.descriptionOfGoodsHeader {
+  width: 30%;
+  text-align: center;
+}
+tr.headerRow th {
+  height: 28px;
+}
+th.hsnSacHeader {
+  width: 12.2%;
+  text-align: center;
+}
+th.quantityHeader {
+  width: 12.7%;
+  text-align: center;
+}
+th.rateHeader {
+  width: 12.5%;
+  text-align: center;
+}
+th.perheader {
+  width: 5%;
+  text-align: center;
+}
+th.discHeader {
+  width: 7.3%;
+  text-align: center;
+}
+th.amountHeader {
+  width: 12.5%;
+  text-align: center;
+}
+tr.emptyRow_columns td {
+  height: 500px;
+}
+th.ODByDaysHeader {
+  font-size: 0.9rem;
+}
+textarea.descriptionText {
+  text-align: center;
+  width: 100%;
+  font-size: 15px;
+  margin-top: 4px;
+  height: 20px;
+  border: none;
+  border-bottom: 2px solid;
+}
+tr.totalRow_columns td {
+  height: 30px;
+  text-align: center;
+  font-size: 15px;
+  color: red;
+}
+.total-section .blockSec tbody tr td {
+  border-bottom: 0px solid #000;
+}
+.total-section .blockSec tr td:nth-last-child(1) {
+  border-right: 0px solid #000;
+  border-left: 1px solid #000;
+  padding: 0px 8px;
+  width: 44%;
+  margin-right: -2px;
+  float: right;
+  height: 30px;
+  line-height: 30px;
+}
+.total-section .blockSec tr td:nth-last-child(2) {
+  border-right: 1px solid #000;
+  padding: 0px 8px;
+  width: 45.6%;
+  float: left;
+  height: 30px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 30px;
+  letter-spacing: 1px;
+}
+
+.total-section .blockSec tr:last-child td {
+  border-bottom: 2px solid #000;
+}
+
+.total-section .blockSec tr td {
+  border: 2px solid;
+}
+.total-section .blockSec tr {
+  width: 100%;
+  float: left;
+}
+.total-section .blockSec caption.total-section-header {
+  float: right;
+  padding: 0px 5px;
+  font-size: 12px;
+  font-style: italic;
+  height: 30px;
+}
+
+tr.blockOneTrOne {
+  font-style: italic;
+  font-family: auto;
+  font-size: 20px;
+  margin: 30px auto;
+  float: left;
+  width: 100%;
+}
+tr.blockOneTrSec {
+  width: 100%;
+  float: left;
+}
+tr.blockOneTrSec td {
+  text-align: center;
+  font-size: 20px;
+  border-bottom: 2px solid;
+  font-weight: 600;
+  font-family: auto;
+  letter-spacing: 1px;
+  float: left;
+  width: 99%;
+}
+.tax-section {
+  float: left;
+  width: 100%;
+}
+tr.taxInWords {
+  display: table-caption;
+  width: 100%;
+  float: left;
+}
+
+.table-section td .driverOptions select {
+  width: 48%;
+  float: left;
+}
+select.descriptiondriveOptions {
+  margin-left: 4%;
+}
+.tax-section tr.taxHeader,
+.taxColValue,
+.taxColEmpty_value {
+  display: table;
+  width: 815px;
+}
+tr.taxHeader th {
+  border: 2px solid;
+  text-align: center;
+  height: 60px;
+  width: 16.6%;
+  font-size: 14px;
+}
+
+tr.taxColValue td,
+.taxColEmpty_value td {
+  border: 2px solid #000;
+}
+.tax-section tr.taxHeader td,
+.taxColValue td,
+.taxColEmpty_value td {
+  padding: 0px 5px;
+  text-align: center;
+  height: 25px;
+  width: 16.6%;
+}
+tr.taxHeader th span {
+  display: block;
+  width: 100%;
+  padding-left: 15px;
+}
+.tax-section table {
+  width: 100%;
+  float: left;
+}
+.tax-section table tbody {
+  display: table-caption;
+}
+.tax-section tr.taxInWords td.taxInWordsLabel {
+  width: 14%;
+  float: left;
+  line-height: 35px;
+}
+.tax-section tr.taxInWords td.taxInWordsValue {
+  width: 85%;
+  border-bottom: 2px solid;
+  font-size: 22px;
+  font-family: auto;
+  font-weight: 600;
+  float: right;
+}
+.bankdetails {
+  width: 100%;
+  float: left;
+  margin-top: 20px;
+  height: 292px;
+  border-bottom: 2px solid #000;
+}
+.bankDetailsBlockOne,
+.bankDetailsBlockTwo {
+  width: 49.93%;
+  float: left;
+}
+
+.l-shape {
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  font-family: auto;
+  letter-spacing: 1px;
+  border: none;
+  padding-left: 40px;
+}
+tr.bankDetailsBlockOneTrOne {
+  height: 45px;
+}
+tr.bankDetailsBlockTwoTrOne {
+  height: 49.5px;
+}
+tr.bankDetailsBlockOneTrTwo td.header,
+tr.bankDetailsBlockOneTrThree td.header,
+tr.bankDetailsBlockOneTrFour td.header {
+  width: 40%;
+  text-align: right;
+  font-family: auto;
+  padding: 0px 5px;
+  font-size: 18px;
+  font-weight: 600;
+}
+tr.bankDetailsBlockOneTrTwo td.highlight,
+tr.bankDetailsBlockOneTrThree td.highlight,
+tr.bankDetailsBlockOneTrFour td.highlight {
+  width: 60%;
+  font-family: auto;
+  padding: 0px 5px;
+  font-size: 18px;
+  font-weight: 600;
+}
+td.hiddenTd {
+  width: 15%;
+}
+tr.bankDetailsBlockOneTrFour,
+tr.bankDetailsBlockTwoTrFour {
+  height: 65px;
+}
+.bankDetailsBlockOne table {
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+.total-section table.blockOne tbody {
+  display: table-caption;
+}
+
+.bankDetailsBlockTwo table {
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+
+.declaration {
+  font-size: 13.5px;
+  padding: 0px 5px;
+  font-family: auto;
+  border-bottom: 2px solid #000;
+  padding-bottom: 5px;
+  border-right: 0px;
+}
+.declaration strong {
+  border-bottom: 1px solid;
+  font-style: italic;
+}
+.receiver p:first-child {
+  font-size: 13.5px;
+  padding: 0px 5px;
+  height: 28px;
+  line-height: 28px;
+  margin: 0px;
+}
+.receiver p:nth-last-child(1) {
+  font-size: 13.5px;
+  padding: 0px 5px;
+  height: 47px;
+  margin: 0px;
+  line-height: 80px;
+  font-family: auto;
+}
+tr.bankDetailsBlockTwoTrOne td.header,
+tr.bankDetailsBlockTwoTrTwo td.header,
+tr.bankDetailsBlockTwoTrThree td.header,
+tr.bankDetailsBlockTwoTrFour td.header {
+  width: 29%;
+  text-align: right;
+  font-family: auto;
+  padding: 0px 5px;
+  font-size: 18px;
+  font-weight: 600;
+}
+tr.bankDetailsBlockTwoTrOne td.email,
+tr.bankDetailsBlockTwoTrTwo td.highlight,
+tr.bankDetailsBlockTwoTrThree td.highlight,
+tr.bankDetailsBlockTwoTrFour td.highlight {
+  width: 80%;
+  float: left;
+  text-align: left;
+  padding: 0px 5px;
+  font-size: 17px;
+  font-family: auto;
+  font-weight: 600;
+}
+tr.bankDetailsBlockTwoTrOne td.email {
+  height: 45px;
+  line-height: 45px;
+  border: 2px solid;
+}
+tr.bankDetailsBlockTwoTrFour td.highlight {
+  font-size: 14.3px;
+  height: 62px;
+}
+.spacetech {
+  text-align: center;
+  font-size: 20px;
+  font-family: auto;
+}
+.footer {
+  text-align: center;
+  font-size: 18px;
+  height: 30px;
+  font-family: auto;
+}
+.actionBlock {
+  position: absolute;
+  width: 30px;
+  display: block;
+  border: none !important;
+}
+.actionBlock button {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.total-section .blockSec tr td:nth-last-child(1) input[type="text"] {
+  width: 90%;
+  padding: 0px;
+  border: 0px;
+  line-height: 28px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 15px;
+}
+.bankDetailsBlockTwo table {
+  width: 100%;
+}
+.billSubmitBlock {
+  width: 100%;
+  display: block;
+}
+button.billSubmit {
+  float: right;
+  margin: 30px 20px 20px;
+  display: block;
+}
+.nameInput input[type="text"] {
+  position: relative;
+}
+
+#style-3::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+#style-3::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+#style-3::-webkit-scrollbar-thumb {
+  background-color: #000000;
+}
+
+span#invoiceReference {
+  float: right;
+  font-size: 13px;
+  font-weight: normal;
+  height: 28px;
+  line-height: 28px;
+  letter-spacing: 0.5px;
+  font-family: auto;
+  width: 160px;
+}
+.main-footer {
+  text-align: center;
+  font-size: 18px;
+  height: 30px;
+  font-family: auto;
+  float: left;
+  display: contents;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.loading-spinner {
+  border: 8px solid rgba(255, 255, 255, 0.2);
+  border-top: 8px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.blurred {
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+td.invoiceInput input[type="text"],
+select.descriptionOptions,
+td.modeOfPaymentselect select {
+  color: red;
+}
+
+select.hsnSacOptions,
+td.custIdInput input[type="text"] {
+  color: #000;
+  font-weight: bold;
+}
+.table-section input[type="number"],
+select.descriptionOptions,
+textarea.descriptionText,
+select#discountOptions,
+.table-section input[type="text"] {
+  font-weight: bold;
+  font-size: 15px;
+}
+.error-border,
+input.error-border {
+  border: 2px solid red !important;
+}
+select.error-border {
+  height: 35px;
+}
+tr.invoiceGrid td {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.bankDetailsBlockOne table {
+  width: 100%;
+}
+
+.bankDetailsBlockOne {
+  border-right: 2px solid #000;
+}
+
+@media (min-width: 1200px) and (max-width: 1918px) {
+  .l-shape div {
+    line-height: 21px;
+  }
+  .receiver p:nth-last-child(1) {
+    height: 35px;
+    line-height: 50px;
+  }
+  .edge-browser .spacetech {
+    height: 70px;
+  }
+}
+
+@media (min-width: 1919px) and (max-width: 3000px) {
+  .total-section .blockSec tr td:nth-last-child(2) {
+    padding: 0 7.5px;
+  }
+  .bankDetailsBlockOne,
+  .bankDetailsBlockTwo {
+    width: 49.8%;
+  }
+  .spacetech {
+    height: 91px;
+  }
+
+  .edge-browser .spacetech {
+    height: 91px;
+  }
+}
+
+@supports (-ms-ime-align: auto) {
+  @media all and (-webkit-min-device-pixel-ratio: 0) and (max-width: 1918px) {
+    /* Your CSS styles for smaller screens here */
+    .spacetech {
+      height: 70px;
+    }
+  }
+
+  @media all and (-webkit-min-device-pixel-ratio: 0) and (min-width: 1919px) and (max-width: 3000px) {
+    /* Your CSS styles for larger screens here */
+    .spacetech {
+      height: 91px;
+    }
+  }
+}

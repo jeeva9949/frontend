@@ -1,0 +1,650 @@
+How do you handle lifecycle in functional components =>
+    React function components is simpler and more readable compared to class components because of React Hooks. 
+    The primary hook used for lifecycle management is useEffect.
+    => React components have three main lifecycle phases:
+        Mounting (Component is created and added to the DOM)
+        Updating (Component updates when state or props change)
+        Unmounting (Component is removed from the DOM)
+    => In React class components, we had methods like:
+        componentDidMount()
+        componentDidUpdate()
+        componentWillUnmount()
+    In function components, we use useEffect to handle these phases.
+    EG: of useEffect 
+        /*const [count, setCount] = useState(0);
+        useEffect(() => {
+            console.log("Component Mounted!");
+        }, []);
+
+        useEffect(() => {
+            console.log(`Count Updated: ${count}`);
+        }, [count]);
+
+        useEffect(() => {
+
+            return () => {
+            console.log("Component Will Unmount!");
+            };
+        }, []); */
+
+====================================================================================================================================
+Explain the workflow of Redux => Redux keeps all your app data in one place (store), updates it through actions, 
+    modifies it with reducers, and makes it accessible to all components.
+    basic Eg of redux in code:
+    chain of flow => store => action => reducer => dispatcher => customer
+    /*
+        import { createStore } from "redux";
+        const initialState = { count: 0 };
+
+        function counterReducer(state = initialState, action) {
+            switch (action.type) {
+                case "INCREMENT":
+                return { count: state.count + 1 };
+                case "DECREMENT":
+                return { count: state.count - 1 };
+                default:
+                return state;
+            }
+        }
+
+        const store = createStore(counterReducer);
+
+        store.dispatch({ type: "INCREMENT" }); // count = 1
+        store.dispatch({ type: "INCREMENT" }); // count = 2
+        store.dispatch({ type: "DECREMENT" }); // count = 1
+    */
+=================================================================================================================================
+What is event binding and property binding => Binding means connecting data (state/props) to UI elements or event handlers.
+👉 Property Binding: Binds state/props to a UI element’s attributes.
+    eg: A text input whose value is controlled by state.
+        /* 
+            const [name, setName] = useState("John");
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        */
+        Here, the input’s value is bound to the name state. Any change updates the state, and the UI updates automatically.
+👉 Event Binding: Binds functions to handle user interactions like clicks, input changes, etc.
+    eg: A button that increases a counter when clicked.
+        /*
+            const [count, setCount] = useState(0);
+
+            function handleClick() {
+                setCount(count + 1);
+            }
+
+            return ( <button onClick={handleClick}>Increase</button> );
+        */
+        Here, clicking the button triggers handleClick(), which updates the count state.
+
+=================================================================================================================================
+Create an counter with count Range =>
+
+    /*
+        import { useState } from "react";
+
+        function Counter() {
+            const min = 0;
+            const max = 10;
+            const [count, setCount] = useState(min);
+
+            return (
+                <div style={{ textAlign: "center", marginTop: "50px" }}>
+                <h1>Count: {count}</h1>
+                <button onClick={() => setCount(count - 1)} disabled={count === min}>-</button>
+                <button onClick={() => setCount(count + 1)} disabled={count === max}>+</button>
+                </div>
+            );
+        }
+        export default Counter;
+    */
+
+=================================================================================================================================
+Fetch the API data and show in table format using axios and jsonplaceholder.com /dummyJson
+    /*
+        import React, { useState, useEffect } from "react";
+        import axios from "axios";
+
+        function UsersTable() {
+            const [users, setUsers] = useState([]); // Store API data
+
+            // Fetch API data when the component loads
+            useEffect(() => {
+                axios.get("https://dummyjson.com/users")
+                .then(response => setUsers(response.data.users)) // Store users
+                .catch(error => console.error("Error fetching data:", error));
+            }, []);
+
+            return (
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <h2>Users List</h2>
+                <table border="1" cellPadding="10" style={{ margin: "auto", borderCollapse: "collapse" }}>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {users.map(user => (
+                        <tr key={user.id}>
+                        <td>{user.id}</td>
+                        <td>{user.firstName} {user.lastName}</td>
+                        <td>{user.email}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                </div>
+            );
+        }
+
+        export default UsersTable;
+    */
+
+=================================================================================================================================
+Difference between library & framework =>
+    =>  Defination
+            library => A collection of reusable functions & components. 
+            framework => A complete structure to build apps.
+    =>  Control
+            library => You control the flow (pick & use functions as needed).
+            framework => The framework controls the flow (it decides how your app runs).
+    =>  Flexibility
+            library => More flexible—you can choose tools & libraries.
+            framework => Less flexible—you follow the framework’s rules.
+=================================================================================================================================
+What is Virtual DOM =>
+    Virtual DOM is a fast, optimized copy of the real DOM that helps React update the UI efficiently!
+    Why is Virtual DOM Needed => Problem with Real DOM:
+        => Updating the real DOM is slow because it repaints the entire UI for every small change.
+    Solution => Virtual DOM:
+        => React creates a virtual copy of the DOM, compares changes, and updates only the necessary parts, 
+        making it super fast! 
+
+    How Virtual DOM Works (Step-by-Step)
+    1️⃣ React creates a Virtual DOM copy when the app loads.
+    2️⃣ User interacts (e.g., clicks a button).
+    3️⃣ React updates the Virtual DOM instead of the real DOM.
+    4️⃣ Diffing Algorithm finds changes between the old & new Virtual DOM.
+    5️⃣ React updates only the changed parts in the real DOM.
+
+=================================================================================================================================
+How Virtual DOM optimizes the performance of the application => Virtual DOM helps React update only the changed parts 
+    instead of reloading the entire UI, making apps super fast & efficient!
+    => Key Benefits of Virtual DOM in Performance Optimization
+    ✅ Faster UI updates (avoids full re-renders).
+    ✅ Efficient memory usage (uses a lightweight copy).
+    ✅ Smoother experience (only necessary parts update).
+    ✅ Less workload on the browser (better performance).
+
+=================================================================================================================================
+what is the need of  installation of Node.js in React application => Node.js is essential because it handles the 
+    behind-the-scenes tasks like managing libraries, running build tools, and preparing your React app for development and production!
+    =>  Key Roles of Node.js in React (Short & Simple)
+        1️⃣ Run Build Tools (Webpack, Babel) => Converts modern JavaScript (JSX, ES6) into code that browsers can understand.
+        2️⃣ Install & Manage Dependencies => Uses npm to install and manage libraries (like Axios, React Router).
+        3️⃣ Development Server => Runs the development server, showing real-time changes without page refresh (Hot Module Replacement).
+        4️⃣ Package Management (npm/yarn) => Manages project dependencies and scripts (like building or testing your app).
+        5️⃣ Build & Deployment => Bundles and optimizes your app for production, making it faster.
+
+=================================================================================================================================
+Which CLI you have used for react development and what is the purpose of an react CLI => React CLI is a tool that makes it 
+    faster and easier to set up, develop, and deploy React apps without needing to configure everything manually!  
+    => Key Purposes of React CLI (Simplified):
+    1️⃣ Create a New React Project => Quickly set up a new React app with one command.
+    Example: npx create-react-app my-app.
+
+    2️⃣ Run the Development Server => Start a server to see changes in real-time.
+    Example: npm start.
+
+    3️⃣ Build for Production => Bundle and optimize your app for deployment.
+    Example: npm run build.
+   
+    4️⃣ Manage Dependencies => Install and update libraries easily.
+    Example: npm install react-router-dom. 
+
+=================================================================================================================================
+How do you achieve conditional rendering in react => Conditional rendering in React means showing different 
+    content based on certain conditions (like if a user is logged in or not ) 
+    =>  if statement: Full control, use for more complex conditions.
+        Ternary operator (? :): Quick, compact conditionals in JSX.
+        && operator: Renders something only if the condition is true.
+
+=================================================================================================================================
+What is the purpose of key in list rendering and what value you mention in keys during api connection => Purpose of key: 
+    Helps React identify each item in the list for efficient updates.
+    => Key Value: Use a unique identifier like id from the API response to avoid duplicates and ensure proper rendering.
+    Eg /*
+        const data = [
+            { id: 1, name: "John" },
+            { id: 2, name: "Jane" },
+        ];
+
+        function UserList() {
+            return (
+                <ul>
+                    {data.map(user => (
+                        <li key={user.id}>{user.name}</li>
+                    ))}
+                </ul>
+            );
+        }
+    */
+=================================================================================================================================
+How do you share data from parent to child component => you can share data from a parent component to a child component 
+    using props.
+    => Props (short for "properties") are like arguments passed to a child component from its parent.
+    => They allow you to pass data from the parent to the child.
+    => Steps to Share Data from Parent to Child in React
+    1️⃣ In Parent Component: => Create data and pass it to the child using props.
+    Eg: 
+    /*
+        function Parent() {
+            const message = "Hello from Parent!";
+            return <Child message={message} />;
+        }
+    */
+    2️⃣ In Child Component: => Receive the data through props and use it.
+    Eg:
+    /*
+        function Child(props) {
+            return <h1>{props.message}</h1>;
+        }
+    */
+
+=================================================================================================================================
+How do you share data from child to parent component => In React, data flows one-way, from parent to child via props. 
+    However, you can share data from child to parent by using a callback function.
+    => Steps to Share Data from Child to Parent:
+    1️⃣ In Parent Component: => Create a callback function that will receive the data from the child.
+                             =>  Pass this function as a prop to the child component.
+    eg: 
+    /*
+        function Parent() {
+            const handleDataFromChild = (data) => {
+                console.log("Data from Child:", data);
+            };
+            
+            return <Child sendData={handleDataFromChild} />;
+        }
+    */
+    2️⃣ In Child Component: => Call the callback function passed as a prop and send the data back to the parent.
+    eg:
+    /*
+        function Child(props) {
+            const sendDataToParent = () => {
+                props.sendData("Hello from Child!");
+            };
+
+            return <button onClick={sendDataToParent}>Send Data to Parent</button>;
+        }
+    */
+=================================================================================================================================
+How do you update the state in class component.
+    => Define state using this.state. eg: this.state = { count: 0 };
+    => Update state using this.setState() eg: this.setState({ count: this.state.count + 1 });
+    => Render the updated state in the render() method  
+        eg: return ( <div> <p>Count: {this.state.count}</p> <button onClick={this.incrementCount}>Increment</button></div> );
+
+=================================================================================================================================
+what is the difference between useState and useReducer hook => Both useState and useReducer are used to manage state in React, 
+    but they have different use cases and functionality.
+    => Defination
+        useState => Simple and Direct: Best for managing simple state like numbers, strings, or booleans.
+        Eg: const [count, setCount] = useState(0);
+            setCount(count + 1);
+        useReducer => Complex State Management: Best for more complex state or when state changes depend on many actions 
+        (e.g., multiple variables, or logic).
+
+=================================================================================================================================
+How do you read the url parameters and queries during routing in react => In React, you can read URL parameters (like /user/1) 
+    and query strings (like ?search=hello) when using React Router.
+    => Read URL Parameters (Dynamic Routes)
+        => Define the Route => Define the route with parameters using :paramName
+        eg: <Route path="/user/:id" component={UserPage} />
+        => Read the Parameter: => Use useParams hook to access the parameter in your component.
+        eg: import { useParams } from 'react-router-dom';
+
+            function UserPage() {
+                const { id } = useParams(); // Reads the 'id' parameter
+                return <h1>User ID: {id}</h1>;
+            }
+
+    => Read Query Parameters (e.g., ?search=hello)
+        => Define the Route: => You don’t need to define query parameters in the route, just use the path.
+        Eg: <Route path="/search" component={SearchPage} />
+        => Read the Query Parameter: => Use useLocation hook to access query parameters.
+        Eg: import { useLocation } from 'react-router-dom';
+
+            function SearchPage() {
+                const location = useLocation();
+                const query = new URLSearchParams(location.search); // Parses query string
+                const searchTerm = query.get('search'); // Gets the 'search' query parameter
+                
+                return <h1>Search Term: {searchTerm}</h1>;
+            }
+    
+    URL Parameters: Use useParams() to read dynamic values in the URL (/user/:id).
+    Query Parameters: Use useLocation() to read query strings (?search=hello).
+
+==================================================================================================================================
+What is the difference between fetch & axios => Both fetch and axios are used to make HTTP requests in React, 
+    but they have some key differences in how they work.
+    =>  fetch (Built-in JavaScript API)
+        => Native to JavaScript: fetch is built into modern browsers, so no need to install anything.
+        => Syntax: Simple but requires some manual work for things like handling errors or parsing responses.
+        Eg: fetch('https://api.example.com/data')
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+    =>  axios (External Library)
+        =>  External Library: You need to install it using npm install axios.
+        =>  Syntax: axios simplifies the process with built-in error handling and automatic response parsing.
+        Eg: import axios from 'axios';
+            axios.get('https://api.example.com/data')
+            .then(response => console.log(response.data))
+            .catch(error => console.error('Error:', error)); 
+==================================================================================================================================
+Explain the lifecycle of react Application & What are the different types of lifecycle phases in react 
+    => The lifecycle of a React application refers to the different stages a component goes through from the moment it is
+    created to the moment it is removed. In React, this lifecycle is divided into three main phases: Mounting, Updating, and Unmounting.
+    => Mounting: Component is created and added to the page (e.g., constructor(), render(), componentDidMount()).
+    => Updating: Component gets updated due to changes in state or props (e.g., shouldComponentUpdate(), render(), componentDidUpdate()).
+    => Unmounting: Component is removed from the page (e.g., componentWillUnmount()).
+    
+    This lifecycle lets React manage updates and performance efficiently! 
+
+==================================================================================================================================
+What is the need of saving data in State instead of variable in react application => In React, state is special because it helps
+    manage dynamic data and ensures the UI automatically updates when the data changes. Regular variables do not trigger 
+    re-renders, while state does. Here's why state is important:
+    => Triggers Re-renders Automatically
+        =>  State tells React to re-render the component when the data changes.
+        =>  Regular variables don’t trigger re-renders, meaning the UI wouldn’t automatically update.
+
+    => Keeps Data Consistent
+        =>  State is part of React's system to track and manage data.
+        =>  Regular variables are not tracked by React, so their values might not reflect what’s in the UI.
+
+    => Helps with Component Reusability
+        =>  With state, the component’s behavior depends on the data and can change independently when state changes.
+        =>  Using regular variables would make it harder to manage the component’s behavior because React wouldn't track changes.
+
+==================================================================================================================================
+What is Portals => A Portal in React allows you to render a component outside its usual parent component in the DOM, but still 
+    keep it part of the React component tree. This is useful when you need to render content like modals, tooltips, or pop-ups 
+    outside the main UI flow but still manage it with React's state and events.
+
+    => How Do Portals Work? => By default, React components render inside their parent DOM element, but with portals, 
+        you can "move" that component to a different place in the DOM.
+        => ReactDOM.createPortal() is used to create a portal and attach the component to a different part of the DOM.
+        eg: 
+            import React from 'react';
+            import ReactDOM from 'react-dom';
+        
+            function Modal() {
+                return ReactDOM.createPortal(
+                    <div className="modal">
+                    <h2>I'm a Modal!</h2>
+                    </div>,
+                    document.getElementById('modal-root') // Where the modal will be rendered in the DOM
+                );
+            }
+
+==================================================================================================================================
+What is higher order components => A Higher-Order Component (HOC) is a function that takes a component and returns a new 
+    component with additional functionality or enhanced behavior. It’s a pattern used to reuse component logic in a clean way.
+    => How Does it Work?
+        => HOCs do not modify the original component. Instead, they wrap the component and add extra features to it.
+        => HOCs can be used for things like adding authentication, fetching data, logging, or adding lifecycle methods.
+        Eg: Create a Higher-Order Component:
+            function withLoadingSpinner(Component) {
+                return function WithLoadingSpinner({ isLoading, ...props }) {
+                    if (isLoading) {
+                        return <div>Loading...</div>;
+                    }
+                    return <Component {...props} />;
+                };
+            }
+
+        Eg: Use the HOC:
+            function MyComponent({ data }) {
+                return <div>Data: {data}</div>;
+            }
+          
+            // Wrap MyComponent with the HOC
+            const MyComponentWithLoading = withLoadingSpinner(MyComponent);
+            
+            // Use the new component with the loading functionality
+            function App() {
+                return <MyComponentWithLoading isLoading={true} data="Hello" />;
+            }
+
+==================================================================================================================================
+What are custom hooks => It's like a middleware where some set of logic is be written and reuse when it required in any component. 
+    A custom hook in React is a function that allows you to reuse logic across multiple components. It's a way to extract and 
+    share common logic (such as managing state or handling side effects) in a clean and reusable way. Custom hooks allow you 
+    to create your own hooks with custom behavior, instead of relying on the built-in hooks like useState, useEffect, etc.
+
+
+==================================================================================================================================
+What are the difference between higher order components & Custom hooks => Both are used for reusing code, but HOCs modify 
+    components, while Custom Hooks share logic in a more flexible and reusable way!
+    => Defination:
+        => HOCs: Wrap components to add extra behavior or features.
+        => Custom Hooks: Encapsulate reusable logic to be used in multiple components without
+
+    => What it returns:
+        =>  HOCs: A new component that wraps the original one.
+        =>  Custom Hooks: A function that contains reusable logic.
+
+    => How it's used:
+        =>  HOCs: Wraps components and gives them extra features.
+        =>  Custom Hooks: Adds reusable logic to any component by calling it.
+
+    => Example use:
+        =>  HOCs: Add a loading spinner, authentication, or data fetching.
+        =>  Custom Hooks: Reuse form input handling, state management, etc.
+
+    => Render impact:
+        =>  HOCs: HOCs create new components, which can affect performance.
+        =>  Custom Hooks: Custom hooks do not create new components, they just share logic.
+
+==================================================================================================================================
+What is lazy loading & suspense in react => Lazy loading and Suspense are techniques used to optimize performance in React 
+    by loading components or data only when needed, rather than loading everything upfront. This helps your app load faster, 
+    especially when dealing with large components or libraries.
+    => Lazy Loading
+        =>  What is it?
+            => Lazy loading allows you to load a component only when it's needed (usually when it's displayed on the screen), 
+            instead of loading all components when the app starts.
+        =>  How does it work?
+            =>  You can use React.lazy() to dynamically import a component when it's required, so the app doesn't load 
+                unnecessary code upfront.
+        =>  eg
+                import React, { Suspense } from 'react';
+                const LazyComponent = React.lazy(() => import('./LazyComponent')); // Lazy load this component
+        
+                function App() {
+                    return (
+                        <div>
+                        <h1>Welcome to my App</h1>
+                        <Suspense fallback={<div>Loading...</div>}>  {/* Fallback UI until LazyComponent is loaded */}
+                            <LazyComponent />
+                        </Suspense>
+                        </div>
+                    );
+                }
+        =>  Why use it?
+            =>  Lazy loading helps your app load faster by only loading the parts of the app that the user actually needs 
+            right now.
+    =>  Suspense
+        => What is it?
+            =>  Suspense is a React feature that helps manage loading states when lazy-loading components, async data, or 
+            anything that requires waiting to load.
+        
+        => How does it work?
+            => Suspense allows you to define a "fallback" UI (like a loading spinner or message) that will be shown while 
+            the lazy-loaded component or async data is being fetched.
+
+        => Example with Lazy Loading:
+            const LazyComponent = React.lazy(() => import('./LazyComponent'));
+
+            function App() {
+              return (
+                <div>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <LazyComponent />
+                  </Suspense>
+                </div>
+              );
+            }
+        => Why use it?
+            => Suspense makes handling loading states easier by allowing you to define exactly what should be shown while 
+            waiting for components to load or data to be fetched.
+            
+
+==================================================================================================================================
+How do you handle errors in react application => In React, you can handle errors in two main ways:
+    => Using Error Boundaries (for UI errors)
+        => EG: 
+            import React from 'react';
+            import ErrorBoundary from './ErrorBoundary';
+            
+            function MyComponent() {
+                throw new Error("Oops, something went wrong!"); // Simulate an error
+                return <div>Hello World</div>;
+            }
+            
+            function App() {
+            return (
+                <ErrorBoundary>
+                <MyComponent />
+                </ErrorBoundary>
+            );
+            }
+    => Error Boundaries: Use them to catch errors in UI components and show a fallback UI instead of crashing.   
+
+    =>  Using try-catch (for asynchronous errors)
+        => Eg:
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setData(data);
+            } catch (error) {
+                setError(error.message); // Catch and handle error
+            }
+    
+    => try-catch for async functions: Use this to handle errors in async code like API calls, so your app can 
+    display an error message instead of crashing.
+
+====================================================================================================================================
+What are components, their types and difference in react => In React, a component is a reusable building block of the UI. 
+    It helps in breaking down the interface into small, manageable parts.
+    => Types of Components in React
+        =>  Functional Components (Modern Approach)
+            => What is it? => A function that returns JSX (UI elements).
+            => Why use it?
+                ✅ Simpler and easier to read
+                ✅ Uses React Hooks (useState, useEffect, etc.) for state & lifecycle
+                ✅ Faster performance (lighter than class components)
+            
+            => Example: function Greeting() {
+                            return <h1>Hello, Welcome!</h1>;
+                        }
+        =>  Class Components (Older Approach)
+            => What is it? A JavaScript class that extends React.Component and has a render() method to return JSX.
+            => Why use it?
+                ❌ More complex than functional components
+                ❌ Uses state and lifecycle methods differently (before hooks were introduced)
+            
+            => Example: import React, { Component } from 'react';
+                        class Greeting extends Component {
+                            render() {
+                                return <h1>Hello, Welcome!</h1>;
+                            }
+                        }
+
+    =>  Syntax
+        =>  Functional Component : Simple function
+        =>  Class Component : JavaScript class
+
+    =>  State Handling
+        =>  Functional Component : Uses useState() hook
+        =>  Class Component : Uses this.state
+
+    =>  Lifecycle Methods
+        =>  Functional Component : Uses useEffect()
+        =>  Class Component : Uses componentDidMount(), componentDidUpdate(), etc.
+
+    =>  Performance
+        =>  Functional Component : Faster & lightweight
+        =>  Class Component : Slightly heavier
+    
+    =>  Readability
+        =>  Functional Component : Easier & shorter
+        =>  Class Component : More complex
+        
+====================================================================================================================================
+What are controlled and uncontrolled form inputs, which is most efficient in usage => In React, form inputs can be controlled 
+    or uncontrolled, based on how the data is managed.
+    => Controlled Components (Recommended & Efficient)
+        => React controls the input value using state.
+        => Changes in the input are handled by useState() or this.state.
+        => eg:  import { useState } from 'react';
+                function ControlledForm() {
+                    const [inputValue, setInputValue] = useState('');
+                    return (
+                        <div>
+                            <input type="text" value={inputValue} // React controls the input
+                            onChange={(e) => setInputValue(e.target.value)}  /> // Updates state
+                            <p>Typed: {inputValue}</p>
+                        </div>
+                    );
+                }
+
+        => Why Use Controlled Components?
+            ✅ Single source of truth (input value is always in React state).
+            ✅ Easier to validate, modify, or manipulate input data.
+            ✅ Recommended for most cases in React applications.
+        
+    =>  Uncontrolled Components (Less Efficient)
+        =>  React does NOT control the input value.
+        =>  Instead, the input holds its own value, and we access it using useRef() or document.getElementById().
+        => Example  import { useRef } from 'react';
+                    function UncontrolledForm() {
+                        const inputRef = useRef(null);
+                        const handleSubmit = () => {
+                            alert(`Typed: ${inputRef.current.value}`);
+                        };
+                        
+                        return (
+                            <div> <input type="text" ref={inputRef} /> {/* React doesn’t control the input */}
+                            <button onClick={handleSubmit}>Submit</button> </div>
+                        );
+                    }
+        =>  Why Use Uncontrolled Components?
+            ✅ Useful when working with third-party libraries or existing forms.
+            ✅ Slightly better performance for very large forms.
+            ❌ Not ideal for React apps since state is not managed effectively.
+        
+====================================================================================================================================
+What is the difference between CreateRef and useRef
+
+====================================================================================================================================
+How browser understand JSX and render it .
+
+====================================================================================================================================
+What is the difference between react & angular
+
+====================================================================================================================================
+What are the limitations of react 
+
+====================================================================================================================================
+Explain the process of Single page applications. 
+
+====================================================================================================================================
+What is the difference between default export and named export 
