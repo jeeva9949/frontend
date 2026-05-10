@@ -166,6 +166,11 @@ input[type="number"],input[type="text"] {
   margin: 4px 7px 0 0 !important;
   float: right !important;
 }
+/* change the width of the address block 
+preview   
+margin: 4px 7px 0 0 !important;
+
+*/
 
 #content .headerBlock2 img {
   max-width: 220px !important;
@@ -182,6 +187,7 @@ input[type="number"],input[type="text"] {
 
 #content .addressBlock p {
   margin: 1px 0 0 !important;
+  padding-right: 20px !important;
 }
 
 #content table {
@@ -231,12 +237,24 @@ input[type="number"],input[type="text"] {
 }
 
 /* Consignee table column widths - label/value pairs */
-#content .billHeaderSection tr td:nth-child(1) { width: 6% !important; }
-#content .billHeaderSection tr td:nth-child(2) { width: 20% !important; }
-#content .billHeaderSection tr td:nth-child(3) { width: 9% !important; }
-#content .billHeaderSection tr td:nth-child(4) { width: 16% !important; }
-#content .billHeaderSection tr td:nth-child(5) { width: 8% !important; }
-#content .billHeaderSection tr td:nth-child(6) { width: 8% !important; }
+#content .billHeaderSection tr td:nth-child(1) {
+  width: 6% !important;
+}
+#content .billHeaderSection tr td:nth-child(2) {
+  width: 20% !important;
+}
+#content .billHeaderSection tr td:nth-child(3) {
+  width: 9% !important;
+}
+#content .billHeaderSection tr td:nth-child(4) {
+  width: 16% !important;
+}
+#content .billHeaderSection tr td:nth-child(5) {
+  width: 8% !important;
+}
+#content .billHeaderSection tr td:nth-child(6) {
+  width: 8% !important;
+}
 
 #content .invoiceInput span,
 #content .modeOfPaymentselect span,
@@ -740,10 +758,16 @@ select#invoiceType:focus {
 }
 
 .headerBlock1 img {
-  max-width: 375px;
-  height: 161px;
+  max-width: 300px;
+  height: 100px;
   float: left;
 }
+/* 
+new changes 
+
+ max-width: 375px;
+ height: 161px;
+*/
 
 .header h1 {
   margin: 10px 0 5px;
@@ -821,7 +845,7 @@ table.blockOne {
 .addressBlock {
   text-align: left;
   font-size: 15px;
-  padding: 0px 16px;
+  padding: 0px 10px;
 }
 
 .billHeaderSection tr td:first-child {
@@ -843,7 +867,7 @@ table.blockOne {
 }
 
 .billHeaderSection tr td:nth-last-child(1) {
-  width: 5%;
+  width: 70%;
   padding: 0px;
 }
 .billHeaderSection tr td:nth-last-child(3) {

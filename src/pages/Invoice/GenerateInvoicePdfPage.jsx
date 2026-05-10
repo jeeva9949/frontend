@@ -10,6 +10,7 @@ import BankDetails from "./BankDetails";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditInvoicePage.css";
+import "./GenerateInvoicePdfPage.css";
 
 const PdfPage = ({
   invoiceDataOverride = null,
@@ -23,6 +24,8 @@ const PdfPage = ({
   const [rows, setRows] = useState([]);
   const [existingRows, setExistingRows] = useState([]);
   const hasDownloadedRef = useRef(false);
+  const contentRef = useRef(null);
+  const invoiceReferenceRef = useRef(null);
 
   useEffect(() => {
     if (invoiceDataOverride) {
@@ -104,6 +107,26 @@ const PdfPage = ({
     setIsLoading(true);
 
     try {
+      const element = contentRef.current;
+      if (!element) {
+        throw new Error("Invoice content was not ready for PDF generation.");
+      }
+
+      await document.fonts?.ready;
+      const images = Array.from(element.querySelectorAll("img"));
+      await Promise.all(
+        images.map((image) => {
+          if (image.complete && image.naturalWidth > 0) {
+            return Promise.resolve();
+          }
+
+          return new Promise((resolve) => {
+            image.onload = resolve;
+            image.onerror = resolve;
+          });
+        }),
+      );
+
       const pdf = new jsPDF({
         unit: "mm",
         format: "a4",
@@ -126,15 +149,9 @@ const PdfPage = ({
 
       for (let i = 0; i < titles.length; i++) {
         // Add header
-        const titleElement = document.getElementById("invoiceReference");
+        const titleElement = invoiceReferenceRef.current;
         if (titleElement) {
           titleElement.textContent = titles[i];
-        }
-
-        // Generate content
-        const element = document.getElementById("content");
-        if (!element) {
-          throw new Error("Element with ID 'content' not found.");
         }
 
         // Convert the element to canvas using html2canvas
@@ -235,10 +252,16 @@ const PdfPage = ({
             <div className="loading-spinner"></div>
           </div>
         )}
-        <div id="content" className="invoice-container">
+        <div
+          id="content"
+          ref={contentRef}
+          className="invoice-container pdf-invoice-content"
+        >
           <h3 className="invoice-title">
             <span>{invoiceData?.invoiceType || "N/A"}</span>
-            <span id="invoiceReference">(Original For Recipient)</span>
+            <span id="invoiceReference" ref={invoiceReferenceRef}>
+              (Original For Recipient)
+            </span>
           </h3>
 
           <div className="header row">
@@ -478,13 +501,20 @@ const PdfPage = ({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="9">No rows available</td>
+                      <td colSpan="8">No rows available</td>
                     </tr>
                   )}
 
                   {invoiceData?.rows && invoiceData.rows.length < 5 && (
                     <tr className="emptyRow_columns">
-                      <td colSpan="9"></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
                     </tr>
                   )}
                   <tr className="totalRow_columns">

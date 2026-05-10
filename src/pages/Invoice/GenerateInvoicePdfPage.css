@@ -1,0 +1,595 @@
+/* Styles in this file are only for the downloaded PDF invoice.
+   GenerateInvoicePdfPage.jsx imports this after EditInvoicePage.css,
+   so edit these rules when changing the generated PDF layout. */
+
+#content.invoice-container.pdf-invoice-content {
+  width: 720px !important;
+  min-height: 1015px !important;
+  margin: 18px auto !important;
+  padding: 0 !important;
+  border: 1px solid #000 !important;
+  display: block !important;
+  background: #fff !important;
+  color: #000 !important;
+  font-family: "Times New Roman", Times, serif !important;
+  box-shadow: none !important;
+}
+
+#content.pdf-invoice-content .invoice-title {
+  position: relative !important;
+  height: 18px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #000 !important;
+  color: #000 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 18px !important;
+  text-align: center !important;
+  letter-spacing: 0 !important;
+}
+
+#content.pdf-invoice-content #invoiceReference {
+  position: absolute !important;
+  top: 0 !important;
+  right: 5px !important;
+  width: auto !important;
+  height: 18px !important;
+  float: none !important;
+  color: #000 !important;
+  font-size: 8px !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  line-height: 18px !important;
+}
+
+#content.pdf-invoice-content .header.row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  min-height: 82px !important;
+  margin: 0 !important;
+  border-bottom: none !important;
+  padding: 0 !important;
+}
+
+#content.pdf-invoice-content .headerBlock1,
+#content.pdf-invoice-content .headerBlock2 {
+  float: none !important;
+  width: auto !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+#content.pdf-invoice-content .headerBlock1 img {
+  display: block !important;
+  max-width: 275px !important;
+  width: 275px !important;
+  height: auto !important;
+  margin: 7px 0 0 9px !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content .headerBlock2 {
+  text-align: right !important;
+}
+
+#content.pdf-invoice-content .addressandGstBlock {
+  width: 230px !important;
+  margin: 4px 7px 0 auto !important;
+  padding: 0 !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content .headerBlock2 img {
+  display: block !important;
+  max-width: 220px !important;
+  width: 220px !important;
+  height: auto !important;
+  margin-left: auto !important;
+}
+
+#content.pdf-invoice-content .addressBlock {
+  padding: 0 !important;
+  color: #000 !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  line-height: 1.15 !important;
+  text-align: left !important;
+}
+
+#content.pdf-invoice-content .addressBlock p {
+  margin: 1px 0 0 !important;
+  padding-right: 20px !important;
+}
+
+#content.pdf-invoice-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+#content.pdf-invoice-content .details {
+  margin: 0 !important;
+}
+
+#content.pdf-invoice-content .details td {
+  height: 18px !important;
+  padding: 1px 4px !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+  background: #fff !important;
+  font-size: 9px !important;
+  line-height: 1.15 !important;
+  vertical-align: middle !important;
+}
+
+#content.pdf-invoice-content .details strong {
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+#content.pdf-invoice-content .billHeaderSection tr td.consigneeDetails {
+  border: 1px solid #000 !important;
+  padding-left: 4px !important;
+}
+
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(1) {
+  width: 6% !important;
+}
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(2) {
+  width: 20% !important;
+}
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(3) {
+  width: 9% !important;
+}
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(4) {
+  width: 16% !important;
+}
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(5) {
+  width: 8% !important;
+}
+#content.pdf-invoice-content .billHeaderSection tr td:nth-child(6) {
+  width: 8% !important;
+}
+
+#content.pdf-invoice-content .invoiceInput span,
+#content.pdf-invoice-content .modeOfPaymentselect span {
+  color: red !important;
+  font-weight: 700 !important;
+}
+
+#content.pdf-invoice-content .custIdInput span {
+  color: #003366 !important;
+  font-weight: 700 !important;
+}
+
+#content.pdf-invoice-content .nameInput,
+#content.pdf-invoice-content .contactInput,
+#content.pdf-invoice-content .placeOfSupplyInput,
+#content.pdf-invoice-content .gstinInput {
+  font-weight: 600 !important;
+}
+
+#content.pdf-invoice-content .table-section {
+  margin: 0 !important;
+}
+
+#content.pdf-invoice-content .table-section th,
+#content.pdf-invoice-content .table-section td {
+  border: 1px solid #000 !important;
+  padding: 1px 4px !important;
+  color: #000 !important;
+  background: #fff !important;
+  font-size: 9px !important;
+  line-height: 1.15 !important;
+  vertical-align: top !important;
+  text-align: center !important;
+}
+
+#content.pdf-invoice-content .table-section th {
+  height: 16px !important;
+  font-weight: 700 !important;
+  vertical-align: middle !important;
+}
+
+/* Section-to-section single border fixes */
+#content.pdf-invoice-content .table-section tr.headerRow th {
+  border-top: none !important;
+}
+#content.pdf-invoice-content .tax-section tr.taxHeader th {
+  border-top: none !important;
+}
+#content.pdf-invoice-content tr.taxInWords td.taxInWordsLabel,
+#content.pdf-invoice-content tr.taxInWords td.taxInWordsValue {
+  border-top: none !important;
+}
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrOne td {
+  border-top: none !important;
+}
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrOne td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrOne td.email {
+  border-top: none !important;
+}
+
+#content.pdf-invoice-content th.slNoHeader           { width: 5% !important; }
+#content.pdf-invoice-content th.descriptionOfGoodsHeader { width: 34% !important; }
+#content.pdf-invoice-content th.hsnSacHeader         { width: 11% !important; }
+#content.pdf-invoice-content th.quantityHeader       { width: 9% !important; }
+#content.pdf-invoice-content th.rateHeader           { width: 12% !important; }
+#content.pdf-invoice-content th.perHeader            { width: 6% !important; }
+#content.pdf-invoice-content th.discHeader           { width: 7% !important; }
+#content.pdf-invoice-content th.amountHeader         { width: 16% !important; text-align: right !important; }
+
+#content.pdf-invoice-content .table-section td:last-child {
+  text-align: right !important;
+}
+
+#content.pdf-invoice-content span.descriptionOptions,
+#content.pdf-invoice-content span.description,
+#content.pdf-invoice-content span.typeOptions,
+#content.pdf-invoice-content span.descriptiondriveOptions,
+#content.pdf-invoice-content span.driveOptionValues {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-size: 9px !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
+#content.pdf-invoice-content span.descriptionOptions {
+  color: red !important;
+  font-weight: 700 !important;
+}
+#content.pdf-invoice-content span.description {
+  color: #000 !important;
+  margin-top: 3px !important;
+}
+#content.pdf-invoice-content span.typeOptions,
+#content.pdf-invoice-content span.descriptiondriveOptions,
+#content.pdf-invoice-content span.driveOptionValues {
+  color: #000 !important;
+  font-weight: 700 !important;
+  margin-top: 3px !important;
+}
+#content.pdf-invoice-content span.hsnSac {
+  color: #003366 !important;
+  font-weight: 700 !important;
+}
+#content.pdf-invoke-content span.amount {
+  display: block !important;
+  text-align: right !important;
+}
+
+#content.pdf-invoice-content tr.emptyRow_columns td {
+  height: 400px !important;
+  border: 1px solid #000 !important;
+  background: #fff !important;
+}
+
+#content.pdf-invoice-content tr.totalRow_columns td {
+  height: 18px !important;
+  padding: 1px 4px !important;
+  color: red !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 18px !important;
+  text-align: center !important;
+  border: 1px solid #000 !important;
+  background: #fff !important;
+  vertical-align: middle !important;
+}
+
+#content.pdf-invoice-content .total-section {
+  display: grid !important;
+  grid-template-columns: 1fr 215px !important;
+  align-items: start !important;
+  margin: 0 !important;
+  float: none !important;
+  border-bottom: 1px solid #000 !important;
+}
+
+#content.pdf-invoice-content .total-section table.blockOne {
+  width: 100% !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content tr.blockOneTrOne td {
+  border: 0 !important;
+  padding: 2px 4px !important;
+  font-size: 9px !important;
+  font-style: italic !important;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+#content.pdf-invoice-content tr.blockOneTrSec td {
+  border: 0 !important;
+  border-bottom: 1px solid #000 !important;
+  padding: 2px 4px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  letter-spacing: 0 !important;
+  float: none !important;
+  width: auto !important;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+#content.pdf-invoice-content .total-section table.blockSec {
+  width: 215px !important;
+  max-width: none !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content .total-section .blockSec caption.total-section-header {
+  display: block !important;
+  height: 14px !important;
+  padding: 0 3px !important;
+  float: none !important;
+  color: #000 !important;
+  font-size: 8px !important;
+  font-style: italic !important;
+  line-height: 14px !important;
+  text-align: right !important;
+  caption-side: top !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+}
+
+#content.pdf-invoice-content .total-section .blockSec tr {
+  display: table-row !important;
+  float: none !important;
+  width: auto !important;
+}
+
+#content.pdf-invoice-content .total-section .blockSec tr td {
+  display: table-cell !important;
+  float: none !important;
+  width: auto !important;
+  height: 15px !important;
+  padding: 0 4px !important;
+  border: 1px solid #000 !important;
+  font-size: 9px !important;
+  line-height: 15px !important;
+  letter-spacing: 0 !important;
+  vertical-align: middle !important;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+#content.pdf-invoice-content .total-section .blockSec tr td:nth-child(1) {
+  text-align: left !important;
+  font-weight: 700 !important;
+}
+#content.pdf-invoice-content .total-section .blockSec tr td:nth-child(2) {
+  text-align: right !important;
+}
+
+#content.pdf-invoice-content .total-section .blockSec tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+#content.pdf-invoice-content .tax-section {
+  width: 100% !important;
+  margin: 0 !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content .tax-section table {
+  width: 100% !important;
+  float: none !important;
+  display: table !important;
+}
+
+#content.pdf-invoice-content .tax-section table tbody {
+  display: table-row-group !important;
+}
+
+#content.pdf-invoice-content .tax-section th,
+#content.pdf-invoice-content .tax-section td {
+  border: 1px solid #000 !important;
+  padding: 1px 3px !important;
+  font-size: 8px !important;
+  text-align: center !important;
+  color: #000 !important;
+  background: #fff !important;
+  vertical-align: middle !important;
+}
+
+#content.pdf-invoice-content .tax-section tr.taxHeader th {
+  height: 30px !important;
+  font-weight: 700 !important;
+  font-size: 8px !important;
+}
+
+#content.pdf-invoice-content .taxColValue td,
+#content.pdf-invoice-content .taxColEmpty_value td {
+  height: 15px !important;
+}
+
+#content.pdf-invoke-content td.taxable_value,
+#content.pdf-invoice-content td.total_tax_amount,
+#content.pdf-invoice-content td.cgst,
+#content.pdf-invoice-content td.sgst,
+#content.pdf-invoice-content td.igst {
+  text-align: right !important;
+}
+
+#content.pdf-invoice-content tr.taxInWords td.taxInWordsLabel {
+  border: 1px solid #000 !important;
+  width: 15% !important;
+  font-size: 8px !important;
+  font-style: italic !important;
+  line-height: 16px !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+}
+#content.pdf-invoice-content tr.taxInWords td.taxInWordsValue {
+  border: 1px solid #000 !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 16px !important;
+  vertical-align: middle !important;
+  text-align: left !important;
+}
+
+#content.pdf-invoice-content .bankdetails {
+  width: 100% !important;
+  height: auto !important;
+  margin-top: 0 !important;
+  border-bottom: 1px solid #000 !important;
+  float: none !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+#content.pdf-invoice-content .bankDetailsBlockOne,
+#content.pdf-invoice-content .bankDetailsBlockTwo {
+  width: auto !important;
+  float: none !important;
+}
+
+#content.pdf-invoice-content .bankDetailsBlockOne {
+  border-right: 1px solid #000 !important;
+}
+
+#content.pdf-invoice-content .bankDetailsBlockOne table,
+#content.pdf-invoice-content .bankDetailsBlockTwo table {
+  border-top: 0 !important;
+  border-bottom: 1px solid #000 !important;
+  width: 100% !important;
+}
+
+#content.pdf-invoice-content .bankdetails td {
+  border: 1px solid #000 !important;
+  padding: 1px 3px !important;
+  font-size: 8px !important;
+  line-height: 1.15 !important;
+  color: #000 !important;
+  background: #fff !important;
+  vertical-align: middle !important;
+}
+
+#content.pdf-invoice-content td.hiddenTd {
+  width: 6% !important;
+  border: none !important;
+  background: #fff !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrOne td.accountDetails {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 2px 4px !important;
+  line-height: 1.4 !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrTwo td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrThree td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrFour td.header {
+  width: 38% !important;
+  text-align: right !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 1px 3px !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrTwo td.highlight,
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrThree td.highlight,
+#content.pdf-invoice-content tr.bankDetailsBlockOneTrFour td.highlight {
+  width: 56% !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 1px 3px !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrOne td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrTwo td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrThree td.header,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrFour td.header {
+  width: 29% !important;
+  text-align: right !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 1px 3px !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrOne td.email {
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  padding: 1px 3px !important;
+  line-height: 1.4 !important;
+}
+
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrTwo td.highlight,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrThree td.highlight,
+#content.pdf-invoice-content tr.bankDetailsBlockTwoTrFour td.highlight {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 1px 3px !important;
+  line-height: 1.4 !important;
+  text-align: left !important;
+}
+
+#content.pdf-invoice-content .declaration {
+  font-size: 7.5px !important;
+  padding: 2px 4px !important;
+  border-bottom: 1px solid #000 !important;
+  line-height: 1.3 !important;
+  color: #000 !important;
+  background: #fff !important;
+}
+#content.pdf-invoice-content .declaration strong {
+  font-style: italic !important;
+}
+
+#content.pdf-invoice-content .receiver p:first-child {
+  font-size: 7.5px !important;
+  padding: 2px 4px !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+  border-bottom: 1px solid #000 !important;
+  color: #000 !important;
+}
+#content.pdf-invoice-content .receiver p:nth-last-child(1) {
+  font-size: 7.5px !important;
+  padding: 2px 4px !important;
+  margin: 0 !important;
+  height: 26px !important;
+  line-height: 26px !important;
+  color: #000 !important;
+}
+
+#content.pdf-invoice-content .spacetech {
+  height: 18px !important;
+  padding: 0 4px !important;
+  color: #000 !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 18px !important;
+  text-align: center !important;
+}
+#content.pdf-invoice-content .footer {
+  height: 18px !important;
+  padding: 0 4px !important;
+  color: #000 !important;
+  font-size: 9px !important;
+  line-height: 18px !important;
+  text-align: center !important;
+}
+
+#content.pdf-invoice-content .main-footer {
+  display: block !important;
+  height: 22px !important;
+  border-top: none !important;
+  color: #000 !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  line-height: 22px !important;
+  text-align: center !important;
+  float: none !important;
+}
+#content.pdf-invoice-content .main-footer p {
+  margin: 0 !important;
+}
