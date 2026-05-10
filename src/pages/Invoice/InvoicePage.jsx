@@ -1449,6 +1449,7 @@ const InvoiceForm = () => {
           <PdfPage
             invoiceDataOverride={previewDetails}
             embedded={true} // Treat as embedded to hide header/footer and toast
+            useAdvancedPdfGenerator={true} // Use the advanced PDF generator for dev preview
             disableAutoDownload={true} // Disable automatic PDF download
           />
         )}
@@ -1471,6 +1472,7 @@ const InvoiceForm = () => {
           <EmbeddedPdfPage
             invoiceDataOverride={pdfInvoiceData}
             embedded
+            // useAdvancedPdfGenerator={true} // Uncomment to use advanced PDF generator for final download
             onDownloadComplete={handlePdfDownloadComplete}
           />
         </div>

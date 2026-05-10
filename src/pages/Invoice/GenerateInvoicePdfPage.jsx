@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import * as domtoimageModule from "dom-to-image-more";
 import { saveAs } from "file-saver";
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../../components/layout/Header";
@@ -12,11 +12,14 @@ import "react-toastify/dist/ReactToastify.css";
 import "./EditInvoicePage.css";
 import "./GenerateInvoicePdfPage.css";
 
+const domtoimage = domtoimageModule.default || domtoimageModule;
+
 const PdfPage = ({
   invoiceDataOverride = null,
   embedded = false,
   onDownloadComplete,
   disableAutoDownload = false, // New prop to control auto-download
+  useAdvancedPdfGenerator = false, // Add this prop
 } = {}) => {
   const { id, timeStamp } = useParams();
   const location = useLocation();
@@ -26,6 +29,7 @@ const PdfPage = ({
   const [existingRows, setExistingRows] = useState([]);
   const hasDownloadedRef = useRef(false);
   const contentRef = useRef(null);
+  // originalDisplay and originalPosition are declared here to be accessible in finally
   const invoiceReferenceRef = useRef(null);
 
   useEffect(() => {
@@ -102,54 +106,105 @@ const PdfPage = ({
     }
   }, [invoiceData, disableAutoDownload]); // Add disableAutoDownload to deps
 
+  /**
+   * Off-screen container: position:absolute keeps the element in the document
+   * layout flow so scrollWidth / scrollHeight are always accurate. The clone
+   * is never visible to the user and never disturbs the live invoice element.
+   */
+  const createOffscreenWrapper = () => {
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText =
+      "position:absolute;top:-99999px;left:0;width:720px;background:#fff;overflow:visible;";
+    document.body.appendChild(wrapper);
+    return wrapper;
+  };
+
+  /** Clones the element with a new title, mounts it, and waits for images + fonts. */
+  const mountClone = async (wrapper, element, title) => {
+    const clone = element.cloneNode(true);
+    const clonedTitle = clone.querySelector("#invoiceReference");
+    if (clonedTitle) clonedTitle.textContent = title;
+
+    wrapper.innerHTML = "";
+    wrapper.appendChild(clone);
+
+    await Promise.all(
+      Array.from(clone.querySelectorAll("img")).map((img) =>
+        img.complete && img.naturalWidth > 0
+          ? Promise.resolve()
+          : new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            }),
+      ),
+    );
+    await document.fonts?.ready;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    return clone;
+  };
+
+  /**
+   * Captures the clone as a 2× PNG using dom-to-image-more (SVG foreignObject).
+   * dom-to-image-more preserves the browser's exact CSS rendering — including
+   * border-collapse, grids, and pseudo-elements — which is why borders in the
+   * PDF match the on-screen preview exactly, without doubling.
+   */
+  const captureCloneAsPng = async (clone) => {
+    const width = 720;
+    const height = clone.scrollHeight || clone.offsetHeight;
+
+    const dataUrl = await domtoimage.toPng(clone, {
+      width,
+      height,
+      scale: 2,
+      bgcolor: "#ffffff",
+      cacheBust: true,
+    });
+
+    return { dataUrl, naturalWidth: width, naturalHeight: height };
+  };
+
+  /**
+   * Scales the image to fit fully within the A4 printable area (both width and
+   * height), reserving 8 mm at the bottom for the page-number line.
+   */
+  const fitImageToPage = (
+    naturalWidth,
+    naturalHeight,
+    pageWidth,
+    pageHeight,
+    margin,
+  ) => {
+    const pageNumReserve = 8;
+    const maxW = pageWidth - 2 * margin;
+    const maxH = pageHeight - 2 * margin - pageNumReserve;
+
+    const scale = Math.min(maxW / naturalWidth, maxH / naturalHeight);
+    const imgW = naturalWidth * scale;
+    const imgH = naturalHeight * scale;
+
+    return {
+      x: margin + (maxW - imgW) / 2,
+      y: margin,
+      imgW,
+      imgH,
+    };
+  };
+
   const pdfDownload = async () => {
     const loadingToastId = embedded
       ? null
       : toast.loading("Generating and downloading PDF...");
     setIsLoading(true);
 
-    // tempary starts 
-    // Declare variables outside the try block to ensure they are accessible in finally
-    let element = null;
-    let originalDisplay = '';
-    let originalPosition = '';
-    let originalLeft = '';
-    let originalTop = '';
-    let originalZIndex = '';
-// ends temparary style variables declaration
+    let tempWrapper = null;
+
     try {
-      // tem start
-      element = contentRef.current;
-      // temp end 
+      const element = contentRef.current;
       if (!element) {
         throw new Error("Invoice content was not ready for PDF generation.");
       }
-      
-      await document.fonts?.ready;
-      const images = Array.from(element.querySelectorAll("img"));
-      await Promise.all(
-        images.map((image) => {
-          if (image.complete && image.naturalWidth > 0) {
-            return Promise.resolve();
-          }
-
-          return new Promise((resolve) => {
-            image.onload = resolve;
-            image.onerror = resolve;
-          });
-        }),
-      );
-      // START: Temporary style manipulation for html2canvas - Remove after CSS changes are complete
-      // Store original styles before modifying
-      // Temporarily make the element visible and positioned for accurate capture
-      element.style.display = "block";
-      element.style.position = "absolute";
-      element.style.left = "0";
-      element.style.top = "0";
-      element.style.zIndex = "9999";
-      // Add a small delay to ensure rendering is complete
-      await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
-      // END: Temporary style manipulation
 
       const pdf = new jsPDF({
         unit: "mm",
@@ -157,13 +212,9 @@ const PdfPage = ({
         orientation: "portrait",
       });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10; // General margin
-      const headerHeight = 5; // Header height
-      const footerHeight = 5; // Footer height
-      const contentHeight =
-        pageHeight - headerHeight - footerHeight - 2 * margin;
+      const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      const margin = 10;
 
       const titles = [
         "(Original For Recipient)",
@@ -171,65 +222,38 @@ const PdfPage = ({
         "(Triplicate For Supplier)",
       ];
 
+      tempWrapper = createOffscreenWrapper();
+
       for (let i = 0; i < titles.length; i++) {
-        // Add header
-        const titleElement = invoiceReferenceRef.current;
-        if (titleElement) {
-          titleElement.textContent = titles[i];
-        }
+        const clone = await mountClone(tempWrapper, element, titles[i]);
+        const { dataUrl, naturalWidth, naturalHeight } =
+          await captureCloneAsPng(clone);
 
-        // Convert the element to canvas using html2canvas
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true, // Ensure cross-origin images are handled correctly
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-          logging: false, // Disable console logging for performance
-        });
-        const imgData = canvas.toDataURL("image/png");
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgWidth = pageWidth - 2 * margin;
-        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-        // Calculate vertical alignment
-        const contentY = margin + headerHeight;
-        if (imgHeight > contentHeight) {
-          console.warn("Content height exceeds available space; scaling down.");
-        }
-
-        pdf.addImage(
-          imgData,
-          "PNG",
+        // Scale to fit within the printable area (respects both width and height)
+        const { x, y, imgW, imgH } = fitImageToPage(
+          naturalWidth,
+          naturalHeight,
+          pageWidth,
+          pageHeight,
           margin,
-          contentY,
-          imgWidth,
-          Math.min(imgHeight, contentHeight),
-          "",
-          "SLOW",
         );
 
-        // Add footer
-        pdf.setFontSize(10);
+        pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
+
+        // Page number sits in the reserved 8mm strip at the bottom
+        pdf.setFontSize(8);
         pdf.text(
           `Page ${i + 1} of ${titles.length}`,
           pageWidth / 2,
-          pageHeight - margin,
+          pageHeight - margin / 2,
           { align: "center" },
         );
 
-        // Add a new page except for the last iteration
-        if (i < titles.length - 1) {
-          pdf.addPage();
-        }
+        if (i < titles.length - 1) pdf.addPage();
       }
 
-      // Compression: Save PDF with a reduced file size
-      const compressedPdf = pdf.output("blob");
-      // Use FileSaver.js to save the compressed file
-      saveAs(
-        compressedPdf,
-        `${invoiceData.invoiceNo}_Full_Invoice_Compressed.pdf`,
-      );
+      saveAs(pdf.output("blob"), `${invoiceData.invoiceNo}_Invoice.pdf`);
+
       if (embedded) {
         onDownloadComplete?.({ success: true });
       } else {
@@ -254,15 +278,101 @@ const PdfPage = ({
       }
     } finally {
       setIsLoading(false);
-      // START: Revert temporary style manipulation - Remove after CSS changes are complete
-      if (element) {
-        element.style.display = originalDisplay;
-        element.style.position = originalPosition;
-        element.style.left = originalLeft;
-        element.style.top = originalTop;
-        element.style.zIndex = originalZIndex;
+      if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
+    }
+  };
+
+  const generateAdvancedPdf = async () => {
+    const loadingToastId = embedded
+      ? null
+      : toast.loading("Generating and downloading PDF...");
+    setIsLoading(true);
+
+    let tempWrapper = null;
+
+    try {
+      const element = contentRef.current;
+      if (!element) {
+        throw new Error("Invoice content was not ready for PDF generation.");
       }
-      // END: Revert temporary style manipulation
+
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+
+      const titles = [
+        "(Original For Recipient)",
+        "(Duplicate For Transporter)",
+        "(Triplicate For Supplier)",
+      ];
+
+      tempWrapper = document.createElement("div");
+      tempWrapper.style.cssText =
+        "position:absolute;top:-99999px;left:0;width:720px;background:#fff;";
+      document.body.appendChild(tempWrapper);
+
+      for (let i = 0; i < titles.length; i++) {
+        const clone = await mountClone(tempWrapper, element, titles[i]);
+        const { dataUrl, naturalWidth, naturalHeight } =
+          await captureCloneAsPng(clone);
+
+        const { x, y, imgW, imgH } = fitImageToPage(
+          naturalWidth,
+          naturalHeight,
+          pageWidth,
+          pageHeight,
+          margin,
+        );
+
+        pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
+
+        pdf.setFontSize(8);
+        pdf.text(
+          `Page ${i + 1} of ${titles.length}`,
+          pageWidth / 2,
+          pageHeight - margin / 2,
+          { align: "center" },
+        );
+
+        if (i < titles.length - 1) pdf.addPage();
+      }
+
+      saveAs(
+        pdf.output("blob"),
+        `${invoiceData.invoiceNo}_Invoice_Advanced.pdf`,
+      );
+
+      if (embedded) {
+        onDownloadComplete?.({ success: true });
+      } else {
+        toast.update(loadingToastId, {
+          render: "PDF downloaded successfully.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error generating advanced PDF:", error);
+      if (embedded) {
+        onDownloadComplete?.({ success: false, error });
+      } else {
+        toast.update(loadingToastId, {
+          render: error?.message || "Failed to generate PDF.",
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+      if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
     }
   };
 
@@ -273,6 +383,11 @@ const PdfPage = ({
   const hsnSac = invoiceData?.rows?.map((row) => row.hsnSac);
   const totalTaxAmount = parseFloat(invoiceData?.totalTaxAmount).toFixed(2);
   const [rupees, paise] = totalTaxAmount.split(".");
+
+  // Determine which PDF download function to use
+  const currentPdfDownloadFunction = useAdvancedPdfGenerator
+    ? generateAdvancedPdf
+    : pdfDownload;
 
   return (
     <>
