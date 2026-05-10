@@ -11,9 +11,9 @@ const BankDetails = () => {
                 Bank Details: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 RTGS / NEFT / CHEQUE :{" "}
-                <div style={{ color: "#003366", fontWeight: "bold" }}>
+                <span style={{ color: "#003366", fontWeight: "bold" }}>
                   SHIVA SPACETECH
-                </div>
+                </span>
               </td>
             </tr>
             <tr className="bankDetailsBlockOneTrTwo">

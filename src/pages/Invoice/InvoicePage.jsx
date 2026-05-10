@@ -51,6 +51,9 @@ const InvoiceForm = () => {
   const paymentSelectRef = useRef(null);
   const tableSectionRef = useRef(null);
 
+  // START: Temporary Dev PDF View - State - Remove after CSS changes are complete
+  const [isDevPdfModalOpen, setIsDevPdfModalOpen] = useState(false);
+
   const handleDownload = useCallback(async (detailsForDownload) => {
     setIsLoading(true);
     const saveButton = document.getElementById("saveInvoiceButton");
@@ -824,6 +827,20 @@ const InvoiceForm = () => {
     toast.success("Preview changes saved.");
   };
 
+  // START: Temporary Dev PDF View - Handler - Remove after CSS changes are complete
+  const handleOpenDevPdfPreview = () => {
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast.error("Please complete all mandatory fields before previewing Dev PDF.");
+      return;
+    }
+    setPreviewDetails(JSON.parse(JSON.stringify(invoiceDetails))); // Use invoiceDetails for the PDF
+    setIsDevPdfModalOpen(true);
+  };
+
+  const handleCloseDevPdfPreview = () => setIsDevPdfModalOpen(false);
+  // END: Temporary Dev PDF View
   const previewClientDetail = previewDetails
     ? addressInfo.find(
         (item) =>
@@ -1329,6 +1346,16 @@ const InvoiceForm = () => {
                     >
                       Preview
                     </button>
+                    {/* START: Temporary Dev PDF View Button - Remove after CSS changes are complete */}
+                    <button
+                      className="btn-secondary"
+                      type="button"
+                      onClick={handleOpenDevPdfPreview}
+                      style={{ marginLeft: '10px', backgroundColor: 'purple', color: 'white' }}
+                    >
+                       PDF View
+                    </button>
+                    {/* END: Temporary Dev PDF View Button */}
                     <button
                       className="btn-next"
                       type="button"
@@ -1410,6 +1437,23 @@ const InvoiceForm = () => {
           </>
         )}
       </Modal>
+
+      {/* START: Temporary Dev PDF View Modal - Remove after CSS changes are complete */}
+      <Modal
+        isOpen={isDevPdfModalOpen}
+        onClose={handleCloseDevPdfPreview}
+        title="PDF View"
+        size="large"
+      >
+        {previewDetails && (
+          <PdfPage
+            invoiceDataOverride={previewDetails}
+            embedded={true} // Treat as embedded to hide header/footer and toast
+            disableAutoDownload={true} // Disable automatic PDF download
+          />
+        )}
+      </Modal>
+      {/* END: Temporary Dev PDF View Modal */}
       {pdfInvoiceData && EmbeddedPdfPage && (
         <div
           aria-hidden="true"

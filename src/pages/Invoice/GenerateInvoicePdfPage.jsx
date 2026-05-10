@@ -16,6 +16,7 @@ const PdfPage = ({
   invoiceDataOverride = null,
   embedded = false,
   onDownloadComplete,
+  disableAutoDownload = false, // New prop to control auto-download
 } = {}) => {
   const { id, timeStamp } = useParams();
   const location = useLocation();
@@ -90,7 +91,8 @@ const PdfPage = ({
   }, [id, timeStamp, location.state, invoiceDataOverride]);
 
   useEffect(() => {
-    if (invoiceData && !hasDownloadedRef.current) {
+    if (invoiceData && !hasDownloadedRef.current && !disableAutoDownload) {
+      // Check disableAutoDownload
       hasDownloadedRef.current = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -98,7 +100,7 @@ const PdfPage = ({
         });
       });
     }
-  }, [invoiceData]);
+  }, [invoiceData, disableAutoDownload]); // Add disableAutoDownload to deps
 
   const pdfDownload = async () => {
     const loadingToastId = embedded
@@ -106,12 +108,23 @@ const PdfPage = ({
       : toast.loading("Generating and downloading PDF...");
     setIsLoading(true);
 
+    // tempary starts 
+    // Declare variables outside the try block to ensure they are accessible in finally
+    let element = null;
+    let originalDisplay = '';
+    let originalPosition = '';
+    let originalLeft = '';
+    let originalTop = '';
+    let originalZIndex = '';
+// ends temparary style variables declaration
     try {
-      const element = contentRef.current;
+      // tem start
+      element = contentRef.current;
+      // temp end 
       if (!element) {
         throw new Error("Invoice content was not ready for PDF generation.");
       }
-
+      
       await document.fonts?.ready;
       const images = Array.from(element.querySelectorAll("img"));
       await Promise.all(
@@ -126,6 +139,17 @@ const PdfPage = ({
           });
         }),
       );
+      // START: Temporary style manipulation for html2canvas - Remove after CSS changes are complete
+      // Store original styles before modifying
+      // Temporarily make the element visible and positioned for accurate capture
+      element.style.display = "block";
+      element.style.position = "absolute";
+      element.style.left = "0";
+      element.style.top = "0";
+      element.style.zIndex = "9999";
+      // Add a small delay to ensure rendering is complete
+      await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+      // END: Temporary style manipulation
 
       const pdf = new jsPDF({
         unit: "mm",
@@ -230,7 +254,15 @@ const PdfPage = ({
       }
     } finally {
       setIsLoading(false);
-      //document.getElementsByClassName('spacetech')[0].style.height = '80px';
+      // START: Revert temporary style manipulation - Remove after CSS changes are complete
+      if (element) {
+        element.style.display = originalDisplay;
+        element.style.position = originalPosition;
+        element.style.left = originalLeft;
+        element.style.top = originalTop;
+        element.style.zIndex = originalZIndex;
+      }
+      // END: Revert temporary style manipulation
     }
   };
 
@@ -417,6 +449,8 @@ const PdfPage = ({
                   <td className="custIdInput">
                     <span>{invoiceData?.custId || "N/A"}</span>
                   </td>
+                  <td></td>
+                  <td></td>
                 </tr>
               </tbody>
             </table>
