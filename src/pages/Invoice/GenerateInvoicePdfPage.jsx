@@ -435,9 +435,10 @@ const PdfPage = ({
             <table>
               <tbody>
                 <tr>
-                  <td className="consigneeDetails" colSpan="2">
+                  <td className="consigneeDetails">
                     <strong>Consignee Details :</strong>
                   </td>
+                  <td className="dummy"></td>
                   <td className="invoiceLabel">
                     <strong>Invoice No.</strong>
                   </td>
