@@ -138,25 +138,24 @@ margin: 4px 7px 0 0 !important;
   border-left: none !important;
 }
 
-/* Consignee table column widths - label/value pairs */
 #content .billHeaderSection tr td:nth-child(1) {
   width: 6% !important;
 }
-/* #content .billHeaderSection tr td:nth-child(2) {
-  width: 20% !important;
-} */
-/* #content .billHeaderSection tr td:nth-child(3) {
-  width: 9% !important;
+#content .billHeaderSection tr td:nth-child(3) {
+  width: 15% !important;
 }
 #content .billHeaderSection tr td:nth-child(4) {
-  width: 16% !important;
+  width: 12% !important;
+  border-right: none !important;
 }
 #content .billHeaderSection tr td:nth-child(5) {
-  width: 8% !important;
+  width: 14% !important;
+  border-right: none !important;
 }
 #content .billHeaderSection tr td:nth-child(6) {
-  width: 8% !important;
-} */
+  width: 19% !important;
+  border-right: none !important;
+}
 
 #content .invoiceInput span,
 #content .modeOfPaymentselect span,
@@ -189,7 +188,7 @@ margin: 4px 7px 0 0 !important;
 }
 
 #content th.slNoHeader {
-  width: 5% !important;
+  width: 6% !important;
 }
 
 #content th.descriptionOfGoodsHeader {
@@ -197,11 +196,11 @@ margin: 4px 7px 0 0 !important;
 }
 
 #content th.hsnSacHeader {
-  width: 11% !important;
+  width: 7% !important;
 }
 
 #content th.quantityHeader {
-  width: 9% !important;
+  width: 8% !important;
 }
 
 #content th.rateHeader {
@@ -209,7 +208,7 @@ margin: 4px 7px 0 0 !important;
 }
 
 #content th.perHeader {
-  width: 6% !important;
+  width: 7% !important;
 }
 
 #content th.discHeader {
@@ -217,7 +216,7 @@ margin: 4px 7px 0 0 !important;
 }
 
 #content th.amountHeader {
-  width: 16% !important;
+  width: 19% !important;
   text-align: right !important;
 }
 

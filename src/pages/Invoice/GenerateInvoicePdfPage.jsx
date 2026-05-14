@@ -152,7 +152,7 @@ const PdfPage = ({
    */
   const captureCloneAsPng = async (clone) => {
     const width = 720;
-    const height = clone.scrollHeight || clone.offsetHeight;
+    const height = (clone.scrollHeight || clone.offsetHeight) + 20;
 
     const dataUrl = await domtoimage.toPng(clone, {
       width,
@@ -871,8 +871,8 @@ const PdfPage = ({
 
           <div className="main-footer">
             <p>
-              **THIS IS COMPUTER GENERATED INVOICE. PLEASE DO WRITE OR CALL US
-              ON QUERIES**
+              THIS IS COMPUTER GENERATED INVOICE. PLEASE DO WRITE OR CALL US ON
+              QUERIES
             </p>
           </div>
         </div>
