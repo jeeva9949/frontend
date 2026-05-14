@@ -435,16 +435,9 @@ const PdfPage = ({
             <table>
               <tbody>
                 <tr>
-                  <td
-                    className="consigneeDetails"
-                    style={{ borderRight: "none !important" }}
-                  >
+                  <td className="consigneeDetails" colSpan={2}>
                     <strong>Consignee Details :</strong>
                   </td>
-                  <td
-                    className="dummy"
-                    style={{ borderLeft: "none !important" }}
-                  ></td>
                   <td className="invoiceLabel">
                     <strong>Invoice No.</strong>
                   </td>

@@ -130,7 +130,12 @@ margin: 4px 7px 0 0 !important;
 
 #content .billHeaderSection tr td.consigneeDetails {
   border: 1px solid #000 !important;
+  border-right: none !important;
   padding-left: 4px !important;
+  white-space: nowrap !important;
+}
+#content .billHeaderSection td.dummy {
+  border-left: none !important;
 }
 
 /* Consignee table column widths - label/value pairs */
@@ -773,7 +778,7 @@ table.blockOne {
 }
 .billHeaderSection tr td.consigneeDetails {
   border-top: 2px solid #000;
-  border-right: 2px solid #000;
+  border-right: none;
   border-bottom: 0px;
   padding: 0px 0px 0px 8px;
 }

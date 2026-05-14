@@ -137,6 +137,9 @@
   border-left: none !important;
   border-bottom: none !important;
 }
+#content.pdf-invoice-content .billHeaderSection td.consigneeDetails {
+  white-space: nowrap !important;
+}
 /* #content.pdf-invoice-content .billHeaderSection tr td:nth-child(2) {
   width: 28% !important;
 } */
@@ -681,9 +684,6 @@
   margin: 0 !important;
 }
 
-.consigneeDetails {
-  border-right: none !important;
-}
-.dummy {
+#content.pdf-invoice-content .billHeaderSection td.consigneeDetails {
   border-right: none !important;
 }
