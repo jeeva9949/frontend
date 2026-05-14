@@ -125,6 +125,7 @@ margin: 4px 7px 0 0 !important;
 #content .total-section strong {
   color: #000 !important;
   font-weight: 700 !important;
+  font-size: 13px !important;
 }
 
 #content .billHeaderSection tr td.consigneeDetails {
