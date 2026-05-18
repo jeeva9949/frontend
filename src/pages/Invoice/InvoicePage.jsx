@@ -867,9 +867,9 @@ const InvoiceForm = () => {
             <div className="info-header"> Add Invoice Details </div>
 
 
-            <div class="container">
-              <div class="progress-container">
-                <div class="progress-steps">
+            <div className="container">
+              <div className="progress-container">
+                <div className="progress-steps">
                   <div
                     className="progress-line"
                     style={{
@@ -894,7 +894,7 @@ const InvoiceForm = () => {
                 </div>
               </div>
 
-              <div class="form-content">
+              <div className="form-content">
                 {/*<!-- Step 1 -->*/}
                 <div
                   className={`form-step ${activeStep === 1 ? "active" : ""}`}
@@ -939,8 +939,8 @@ const InvoiceForm = () => {
                     )}
                   </div>
                   {selectedClientDetail && (
-                    <section class="invoice-section client">
-                      <div class="section-title">Client Details</div>
+                    <section className="invoice-section client">
+                      <div className="section-title">Client Details</div>
                       <div className="info-grid">
                         {selectedClientDetail.contactName && (
                           <div className="info-item">
@@ -1043,8 +1043,8 @@ const InvoiceForm = () => {
                     <textarea id="message" placeholder="What brings you here today?"></textarea>
                 </div>*/}
 
-                  <section class="invoice-section header">
-                    <div class="section-title">Invoice Details</div>
+                  <section className="invoice-section header">
+                    <div className="section-title">Invoice Details</div>
                     <div className="info-grid">
                       <div className="info-item">
                         <label className="field-label">

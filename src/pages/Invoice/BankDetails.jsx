@@ -43,7 +43,7 @@ const BankDetails = () => {
       </div>
 
       <div className="bankDetailsBlockTwo">
-        <table class="table2forbanlBlock">
+        <table className="table2forbanlBlock">
           <tbody>
             <tr className="bankDetailsBlockTwoTrOne">
               <td className="header">PHONE PE / UPI ID</td>

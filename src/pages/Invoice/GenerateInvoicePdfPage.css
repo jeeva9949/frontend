@@ -3,8 +3,8 @@
    so edit these rules when changing the generated PDF layout. */
 
 #content.invoice-container.pdf-invoice-content {
-  width: 720px !important;
-  min-height: 1015px !important;
+  width: 100%  !important;
+  min-height: auto !important;
   margin: 18px auto !important;
   padding: 0 0 40px 0 !important;
   border: 1px solid #000 !important;
@@ -696,4 +696,27 @@
 
 #content.pdf-invoice-content .billHeaderSection td.consigneeDetails {
   border-right: none !important;
+}
+
+#content.invoice-container.pdf-invoice-content {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+#content.invoice-container.pdf-invoice-content table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.pdf-invoice-content * {
+  box-sizing: border-box;
+}
+
+#content.invoice-container {
+  width: 100%;
+  padding: 0;
+  margin: 0 auto;
 }

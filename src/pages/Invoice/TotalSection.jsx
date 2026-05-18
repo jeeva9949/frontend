@@ -7,7 +7,7 @@ const TotalSection = ({ invoiceDetails, handleInputChange, showCgstSgst }) => {
   return (
     <div className="invoice-total-wrapper">
       {/* Amount in Words */}
-      <div class="invoice-left-block">
+      <div className="invoice-left-block">
         <div className="amount-words-box">
           <div className="amount-words-title">
             Amount Chargeable (In Words)
@@ -23,7 +23,7 @@ const TotalSection = ({ invoiceDetails, handleInputChange, showCgstSgst }) => {
         <TaxSection invoiceDetails={invoiceDetails} handleInputChange={handleInputChange} showCgstSgst={showCgstSgst} />
       </div>
       {/* Totals Table */}
-      <div class="invoice-right-block">
+      <div className="invoice-right-block">
         <div className="totals-box">
           <div className="totals-header">E &amp; O.E</div>
 

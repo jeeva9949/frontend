@@ -150,8 +150,23 @@ const PdfPage = ({
    * border-collapse, grids, and pseudo-elements — which is why borders in the
    * PDF match the on-screen preview exactly, without doubling.
    */
+  // const captureCloneAsPng = async (clone) => {
+  //   const width = clone.offsetWidth || 1000; // Fallback to 720px if offsetWidth is unavailable
+  //   const height = (clone.scrollHeight || clone.offsetHeight) + 20;
+
+  //   const dataUrl = await domtoimage.toPng(clone, {
+  //     width,
+  //     height,
+  //     scale: 2,
+  //     bgcolor: "#ffffff",
+  //     cacheBust: true,
+  //   });
+
+  //   return { dataUrl, naturalWidth: width, naturalHeight: height };
+  // };
   const captureCloneAsPng = async (clone) => {
-    const width = 720;
+    const width = clone.scrollWidth || clone.offsetWidth || 1000;
+
     const height = (clone.scrollHeight || clone.offsetHeight) + 20;
 
     const dataUrl = await domtoimage.toPng(clone, {
@@ -160,15 +175,41 @@ const PdfPage = ({
       scale: 2,
       bgcolor: "#ffffff",
       cacheBust: true,
+      quality: 1,
     });
 
-    return { dataUrl, naturalWidth: width, naturalHeight: height };
+    return {
+      dataUrl,
+      naturalWidth: width,
+      naturalHeight: height,
+    };
   };
-
   /**
    * Scales the image to fit fully within the A4 printable area (both width and
    * height), reserving 8 mm at the bottom for the page-number line.
    */
+  // const fitImageToPage = (
+  //   naturalWidth,
+  //   naturalHeight,
+  //   pageWidth,
+  //   pageHeight,
+  //   margin,
+  // ) => {
+  //   const pageNumReserve = 8;
+  //   const maxW = pageWidth - 2 * margin;
+  //   const maxH = pageHeight - 2 * margin - pageNumReserve;
+
+  //   const scale = Math.min(maxW / naturalWidth, maxH / naturalHeight);
+  //   const imgW = naturalWidth * scale;
+  //   const imgH = naturalHeight * scale;
+
+  //   return {
+  //     x: margin + (maxW - imgW) / 2,
+  //     y: margin,
+  //     imgW,
+  //     imgH,
+  //   };
+  // };
   const fitImageToPage = (
     naturalWidth,
     naturalHeight,
@@ -176,32 +217,129 @@ const PdfPage = ({
     pageHeight,
     margin,
   ) => {
-    const pageNumReserve = 8;
-    const maxW = pageWidth - 2 * margin;
-    const maxH = pageHeight - 2 * margin - pageNumReserve;
+    // Same margin for all 4 sides
+    const footerReserve = 5;
 
-    const scale = Math.min(maxW / naturalWidth, maxH / naturalHeight);
-    const imgW = naturalWidth * scale;
-    const imgH = naturalHeight * scale;
+    // Exact printable area
+    const printableWidth = pageWidth - margin * 2;
+
+    const printableHeight = pageHeight - margin * 2 - footerReserve;
 
     return {
-      x: margin + (maxW - imgW) / 2,
+      // Equal left spacing
+      x: margin,
+
+      // Equal top spacing
       y: margin,
-      imgW,
-      imgH,
+
+      // Exact width fit
+      imgW: printableWidth,
+
+      // Exact height fit
+      imgH: printableHeight,
     };
   };
+  // const pdfDownload = async () => {
+  //   const loadingToastId = embedded
+  //     ? null
+  //     : toast.loading("Generating and downloading PDF...");
+  //   setIsLoading(true);
 
+  //   let tempWrapper = null;
+
+  //   try {
+  //     const element = contentRef.current;
+  //     if (!element) {
+  //       throw new Error("Invoice content was not ready for PDF generation.");
+  //     }
+
+  //     const pdf = new jsPDF({
+  //       unit: "mm",
+  //       format: "a4",
+  //       orientation: "portrait",
+  //     });
+
+  //     const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+  //     const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+  //     const margin = 10;
+
+  //     const titles = [
+  //       "(Original For Recipient)",
+  //       "(Duplicate For Transporter)",
+  //       "(Triplicate For Supplier)",
+  //     ];
+
+  //     tempWrapper = createOffscreenWrapper();
+
+  //     for (let i = 0; i < titles.length; i++) {
+  //       const clone = await mountClone(tempWrapper, element, titles[i]);
+  //       const { dataUrl, naturalWidth, naturalHeight } =
+  //         await captureCloneAsPng(clone);
+
+  //       // Scale to fit within the printable area (respects both width and height)
+  //       const { x, y, imgW, imgH } = fitImageToPage(
+  //         naturalWidth,
+  //         naturalHeight,
+  //         pageWidth,
+  //         pageHeight,
+  //         margin,
+  //       );
+
+  //       pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
+
+  //       // Page number sits in the reserved 8mm strip at the bottom
+  //       pdf.setFontSize(8);
+  //       pdf.text(
+  //         `Page ${i + 1} of ${titles.length}`,
+  //         pageWidth / 2,
+  //         pageHeight - margin / 2,
+  //         { align: "center" },
+  //       );
+
+  //       if (i < titles.length - 1) pdf.addPage();
+  //     }
+
+  //     saveAs(pdf.output("blob"), `${invoiceData.invoiceNo}_Invoice.pdf`);
+
+  //     if (embedded) {
+  //       onDownloadComplete?.({ success: true });
+  //     } else {
+  //       toast.update(loadingToastId, {
+  //         render: "PDF downloaded successfully.",
+  //         type: "success",
+  //         isLoading: false,
+  //         autoClose: 3000,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //     if (embedded) {
+  //       onDownloadComplete?.({ success: false, error });
+  //     } else {
+  //       toast.update(loadingToastId, {
+  //         render: error?.message || "Failed to generate PDF.",
+  //         type: "error",
+  //         isLoading: false,
+  //         autoClose: 5000,
+  //       });
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //     if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
+  //   }
+  // };
   const pdfDownload = async () => {
     const loadingToastId = embedded
       ? null
       : toast.loading("Generating and downloading PDF...");
+
     setIsLoading(true);
 
     let tempWrapper = null;
 
     try {
       const element = contentRef.current;
+
       if (!element) {
         throw new Error("Invoice content was not ready for PDF generation.");
       }
@@ -210,11 +348,17 @@ const PdfPage = ({
         unit: "mm",
         format: "a4",
         orientation: "portrait",
+        compress: true,
       });
 
-      const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
-      const margin = 10;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      /**
+       * 50px visual spacing
+       */
+      const margin = 7;
 
       const titles = [
         "(Original For Recipient)",
@@ -226,10 +370,10 @@ const PdfPage = ({
 
       for (let i = 0; i < titles.length; i++) {
         const clone = await mountClone(tempWrapper, element, titles[i]);
+
         const { dataUrl, naturalWidth, naturalHeight } =
           await captureCloneAsPng(clone);
 
-        // Scale to fit within the printable area (respects both width and height)
         const { x, y, imgW, imgH } = fitImageToPage(
           naturalWidth,
           naturalHeight,
@@ -240,22 +384,28 @@ const PdfPage = ({
 
         pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
 
-        // Page number sits in the reserved 8mm strip at the bottom
         pdf.setFontSize(8);
+
         pdf.text(
           `Page ${i + 1} of ${titles.length}`,
           pageWidth / 2,
-          pageHeight - margin / 2,
-          { align: "center" },
+          pageHeight - 2,
+          {
+            align: "center",
+          },
         );
 
-        if (i < titles.length - 1) pdf.addPage();
+        if (i < titles.length - 1) {
+          pdf.addPage();
+        }
       }
 
       saveAs(pdf.output("blob"), `${invoiceData.invoiceNo}_Invoice.pdf`);
 
       if (embedded) {
-        onDownloadComplete?.({ success: true });
+        onDownloadComplete?.({
+          success: true,
+        });
       } else {
         toast.update(loadingToastId, {
           render: "PDF downloaded successfully.",
@@ -266,8 +416,12 @@ const PdfPage = ({
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
+
       if (embedded) {
-        onDownloadComplete?.({ success: false, error });
+        onDownloadComplete?.({
+          success: false,
+          error,
+        });
       } else {
         toast.update(loadingToastId, {
           render: error?.message || "Failed to generate PDF.",
@@ -278,20 +432,118 @@ const PdfPage = ({
       }
     } finally {
       setIsLoading(false);
-      if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
+
+      if (tempWrapper?.parentNode) {
+        document.body.removeChild(tempWrapper);
+      }
     }
   };
 
+  // const generateAdvancedPdf = async () => {
+  //   const loadingToastId = embedded
+  //     ? null
+  //     : toast.loading("Generating and downloading PDF...");
+  //   setIsLoading(true);
+
+  //   let tempWrapper = null;
+
+  //   try {
+  //     const element = contentRef.current;
+  //     if (!element) {
+  //       throw new Error("Invoice content was not ready for PDF generation.");
+  //     }
+
+  //     const pdf = new jsPDF({
+  //       unit: "mm",
+  //       format: "a4",
+  //       orientation: "portrait",
+  //     });
+
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+  //     const pageHeight = pdf.internal.pageSize.getHeight();
+  //     const margin = 10;
+
+  //     const titles = [
+  //       "(Original For Recipient)",
+  //       "(Duplicate For Transporter)",
+  //       "(Triplicate For Supplier)",
+  //     ];
+
+  //     tempWrapper = document.createElement("div");
+  //     tempWrapper.style.cssText =
+  //       "position:absolute;top:-99999px;left:0;width:720px;background:#fff;";
+  //     document.body.appendChild(tempWrapper);
+
+  //     for (let i = 0; i < titles.length; i++) {
+  //       const clone = await mountClone(tempWrapper, element, titles[i]);
+  //       const { dataUrl, naturalWidth, naturalHeight } =
+  //         await captureCloneAsPng(clone);
+
+  //       const { x, y, imgW, imgH } = fitImageToPage(
+  //         naturalWidth,
+  //         naturalHeight,
+  //         pageWidth,
+  //         pageHeight,
+  //         margin,
+  //       );
+
+  //       pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
+
+  //       pdf.setFontSize(8);
+  //       pdf.text(
+  //         `Page ${i + 1} of ${titles.length}`,
+  //         pageWidth / 2,
+  //         pageHeight - margin / 2,
+  //         { align: "center" },
+  //       );
+
+  //       if (i < titles.length - 1) pdf.addPage();
+  //     }
+
+  //     saveAs(
+  //       pdf.output("blob"),
+  //       `${invoiceData.invoiceNo}_Invoice_Advanced.pdf`,
+  //     );
+
+  //     if (embedded) {
+  //       onDownloadComplete?.({ success: true });
+  //     } else {
+  //       toast.update(loadingToastId, {
+  //         render: "PDF downloaded successfully.",
+  //         type: "success",
+  //         isLoading: false,
+  //         autoClose: 3000,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error generating advanced PDF:", error);
+  //     if (embedded) {
+  //       onDownloadComplete?.({ success: false, error });
+  //     } else {
+  //       toast.update(loadingToastId, {
+  //         render: error?.message || "Failed to generate PDF.",
+  //         type: "error",
+  //         isLoading: false,
+  //         autoClose: 5000,
+  //       });
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //     if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
+  //   }
+  // };
   const generateAdvancedPdf = async () => {
     const loadingToastId = embedded
       ? null
       : toast.loading("Generating and downloading PDF...");
+
     setIsLoading(true);
 
     let tempWrapper = null;
 
     try {
       const element = contentRef.current;
+
       if (!element) {
         throw new Error("Invoice content was not ready for PDF generation.");
       }
@@ -300,11 +552,14 @@ const PdfPage = ({
         unit: "mm",
         format: "a4",
         orientation: "portrait",
+        compress: true,
       });
 
       const pageWidth = pdf.internal.pageSize.getWidth();
+
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
+
+      const margin = 5;
 
       const titles = [
         "(Original For Recipient)",
@@ -312,13 +567,11 @@ const PdfPage = ({
         "(Triplicate For Supplier)",
       ];
 
-      tempWrapper = document.createElement("div");
-      tempWrapper.style.cssText =
-        "position:absolute;top:-99999px;left:0;width:720px;background:#fff;";
-      document.body.appendChild(tempWrapper);
+      tempWrapper = createOffscreenWrapper();
 
       for (let i = 0; i < titles.length; i++) {
         const clone = await mountClone(tempWrapper, element, titles[i]);
+
         const { dataUrl, naturalWidth, naturalHeight } =
           await captureCloneAsPng(clone);
 
@@ -333,14 +586,19 @@ const PdfPage = ({
         pdf.addImage(dataUrl, "PNG", x, y, imgW, imgH, "", "FAST");
 
         pdf.setFontSize(8);
+
         pdf.text(
           `Page ${i + 1} of ${titles.length}`,
           pageWidth / 2,
-          pageHeight - margin / 2,
-          { align: "center" },
+          pageHeight - 5,
+          {
+            align: "center",
+          },
         );
 
-        if (i < titles.length - 1) pdf.addPage();
+        if (i < titles.length - 1) {
+          pdf.addPage();
+        }
       }
 
       saveAs(
@@ -349,7 +607,9 @@ const PdfPage = ({
       );
 
       if (embedded) {
-        onDownloadComplete?.({ success: true });
+        onDownloadComplete?.({
+          success: true,
+        });
       } else {
         toast.update(loadingToastId, {
           render: "PDF downloaded successfully.",
@@ -360,8 +620,12 @@ const PdfPage = ({
       }
     } catch (error) {
       console.error("Error generating advanced PDF:", error);
+
       if (embedded) {
-        onDownloadComplete?.({ success: false, error });
+        onDownloadComplete?.({
+          success: false,
+          error,
+        });
       } else {
         toast.update(loadingToastId, {
           render: error?.message || "Failed to generate PDF.",
@@ -372,10 +636,12 @@ const PdfPage = ({
       }
     } finally {
       setIsLoading(false);
-      if (tempWrapper?.parentNode) document.body.removeChild(tempWrapper);
+
+      if (tempWrapper?.parentNode) {
+        document.body.removeChild(tempWrapper);
+      }
     }
   };
-
   const totalQuantity = invoiceData?.rows?.reduce(
     (total, row) => total + parseFloat(row.quantity || 0),
     0,
